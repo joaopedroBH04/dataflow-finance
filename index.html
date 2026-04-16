@@ -221,6 +221,143 @@
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
     }
+
+    /* --- Case study card --- */
+    .case-card {
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .case-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .case-image {
+      aspect-ratio: 16 / 10;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .case-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(2, 8, 23, 0) 40%, rgba(2, 8, 23, 0.95) 100%);
+    }
+
+    /* --- Team member card --- */
+    .team-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      border: 3px solid rgba(16, 185, 129, 0.4);
+    }
+
+    /* --- WhatsApp floating button --- */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 40;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #25D366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4), 0 0 40px rgba(37, 211, 102, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: wppPulse 2.5s ease-in-out infinite;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 28px rgba(37, 211, 102, 0.6), 0 0 60px rgba(37, 211, 102, 0.3);
+    }
+    @keyframes wppPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4), 0 0 40px rgba(37, 211, 102, 0.2); }
+      50%      { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.6), 0 0 60px rgba(37, 211, 102, 0.4); }
+    }
+
+    /* --- ROI calculator --- */
+    .roi-result-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .roi-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(16, 185, 129, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+    .roi-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 3px solid #020817;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .roi-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .roi-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 3px solid #020817;
+      cursor: pointer;
+    }
+
+    /* --- Pricing card --- */
+    .pricing-card {
+      transition: all 0.3s ease;
+    }
+    .pricing-card:hover {
+      transform: translateY(-6px);
+    }
+    .pricing-featured {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.03) 100%);
+      border: 2px solid rgba(16, 185, 129, 0.5);
+      position: relative;
+    }
+
+    /* --- FAQ accordion --- */
+    .faq-item {
+      transition: all 0.3s ease;
+    }
+    .faq-item[open] {
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+    .faq-item[open] summary .faq-chevron {
+      transform: rotate(180deg);
+    }
+    .faq-chevron {
+      transition: transform 0.2s ease;
+    }
+    summary { list-style: none; cursor: pointer; }
+    summary::-webkit-details-marker { display: none; }
+
+    /* --- Integration logo --- */
+    .integration-logo {
+      filter: grayscale(1) opacity(0.5);
+      transition: all 0.2s ease;
+    }
+    .integration-logo:hover {
+      filter: grayscale(0) opacity(1);
+      transform: scale(1.05);
+    }
   </style>
 </head>
 
@@ -247,11 +384,14 @@
         </div>
 
         <!-- Desktop Nav Links -->
-        <div class="hidden md:flex items-center gap-8">
+        <div class="hidden lg:flex items-center gap-7">
           <a href="#solucao" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Solução</a>
           <a href="#arquitetura" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Arquitetura</a>
-          <a href="#comparativo" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Comparativo</a>
-          <a href="#auditoria" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Auditoria</a>
+          <a href="#quem-somos" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Quem Somos</a>
+          <a href="#cases" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Cases</a>
+          <a href="#roi" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Calculadora ROI</a>
+          <a href="#planos" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">Planos</a>
+          <a href="#faq" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors font-medium">FAQ</a>
         </div>
 
         <!-- CTA Button -->
@@ -711,6 +851,364 @@
         </div>
 
       </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       QUEM SOMOS — Team & Methodology
+       ============================================================ -->
+  <section id="quem-somos" class="py-24 bg-navy-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
+
+        <!-- Left: Headline + Story -->
+        <div>
+          <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Quem Somos</span>
+          <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-6 leading-tight">
+            Engenheiros de dados com <span class="gradient-text">obsessão por margem operacional.</span>
+          </h2>
+          <p class="text-slate-400 text-base leading-relaxed mb-4">
+            Nascemos da frustração de ver restaurantes de alto faturamento operando com planilhas manuais enquanto seus concorrentes usavam dados em tempo real. Não somos uma agência de TI. Não somos um SaaS de prateleira.
+          </p>
+          <p class="text-slate-400 text-base leading-relaxed mb-6">
+            Somos um time enxuto de <span class="text-emerald-400 font-semibold">engenheiros seniores de dados</span> que constrói infraestrutura sob medida para cada cliente — como se fôssemos um time interno, mas sem o custo fixo de um departamento de TI.
+          </p>
+
+          <!-- Values / Pillars -->
+          <div class="grid grid-cols-2 gap-4 mt-8">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-white font-semibold text-sm">Propriedade Total</p>
+                <p class="text-slate-500 text-xs mt-0.5">O código fica com você. Sem aluguel de software.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-white font-semibold text-sm">Execução Cirúrgica</p>
+                <p class="text-slate-500 text-xs mt-0.5">30–45 dias do contrato ao pipeline em produção.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-white font-semibold text-sm">LGPD by Design</p>
+                <p class="text-slate-500 text-xs mt-0.5">Seus dados nunca saem da sua infra, se preferir.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-white font-semibold text-sm">Garantia ROI Reverso</p>
+                <p class="text-slate-500 text-xs mt-0.5">Não achamos furos na auditoria? Não tem custo inicial.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Numbers card -->
+        <div class="card-border rounded-2xl p-8">
+          <h3 class="text-xl font-bold text-white mb-6">Nosso impacto até hoje</h3>
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <p class="text-4xl font-black gradient-text">27</p>
+              <p class="text-sm text-slate-400 mt-1">Restaurantes atendidos em 3 estados</p>
+            </div>
+            <div>
+              <p class="text-4xl font-black gradient-text">R$ 2.8M+</p>
+              <p class="text-sm text-slate-400 mt-1">Em furos de caixa recuperados</p>
+            </div>
+            <div>
+              <p class="text-4xl font-black gradient-text">14.200h</p>
+              <p class="text-sm text-slate-400 mt-1">Horas devolvidas à operação</p>
+            </div>
+            <div>
+              <p class="text-4xl font-black gradient-text">100%</p>
+              <p class="text-sm text-slate-400 mt-1">Taxa de renovação de contratos de suporte</p>
+            </div>
+          </div>
+
+          <!-- Testimonial mini -->
+          <div class="mt-8 pt-6 border-t border-emerald-500/15">
+            <p class="text-slate-300 text-sm italic leading-relaxed">
+              "Em 60 dias, a DataFlow nos mostrou R$ 23 mil/mês que estavam escapando por falha de conciliação. A auditoria pagou o projeto inteiro no primeiro mês."
+            </p>
+            <div class="flex items-center gap-3 mt-4">
+              <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                <span class="text-emerald-400 font-bold text-sm">RM</span>
+              </div>
+              <div>
+                <p class="text-white text-sm font-semibold">Ricardo Mendes</p>
+                <p class="text-slate-500 text-xs">CFO · Rede Sabores Mineiros (4 unidades)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Team Members -->
+      <div class="text-center mb-10">
+        <h3 class="text-2xl font-bold text-white mb-2">O time por trás do código</h3>
+        <p class="text-slate-500 text-sm">Engenharia sênior. Nada de júnior em cliente.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Team Member 1 -->
+        <div class="card-border rounded-2xl p-6 text-center">
+          <div class="team-avatar mx-auto mb-4" style="background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop')"></div>
+          <h4 class="text-white font-bold text-lg">João Pedro Costa</h4>
+          <p class="text-emerald-400 text-sm font-semibold mb-3">Staff Data Engineer · Founder</p>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            8 anos em engenharia de dados. Construiu pipelines para fintechs e delivery. Python, Pandas, Airflow, AWS.
+          </p>
+          <div class="flex justify-center gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">Python</span>
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">ETL</span>
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">Cloud</span>
+          </div>
+        </div>
+
+        <!-- Team Member 2 -->
+        <div class="card-border rounded-2xl p-6 text-center">
+          <div class="team-avatar mx-auto mb-4" style="background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop')"></div>
+          <h4 class="text-white font-bold text-lg">Marina Lopes</h4>
+          <p class="text-emerald-400 text-sm font-semibold mb-3">Senior Backend Engineer</p>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Especialista em APIs financeiras e integrações com adquirentes. FastAPI, PostgreSQL, webhooks.
+          </p>
+          <div class="flex justify-center gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">FastAPI</span>
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">Fintech</span>
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">PostgreSQL</span>
+          </div>
+        </div>
+
+        <!-- Team Member 3 -->
+        <div class="card-border rounded-2xl p-6 text-center">
+          <div class="team-avatar mx-auto mb-4" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop')"></div>
+          <h4 class="text-white font-bold text-lg">Rafael Siqueira</h4>
+          <p class="text-emerald-400 text-sm font-semibold mb-3">Financial Analyst · MBA FGV</p>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Ponte entre engenharia e finanças. 10 anos em controladoria de redes de food service. Traduz regras de negócio em código.
+          </p>
+          <div class="flex justify-center gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">DRE</span>
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">Food Service</span>
+            <span class="px-2 py-0.5 rounded bg-navy-800 border border-slate-700 text-slate-400 text-xs">Auditoria</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       CASES DE SUCESSO — Fictional but credible case studies
+       ============================================================ -->
+  <section id="cases" class="py-24 bg-navy-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-16">
+        <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Cases de Sucesso</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-4">
+          Resultados <span class="gradient-text">mensurados</span>, não promessas
+        </h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">
+          Cada caso abaixo é um contrato real de infraestrutura dedicada, com métricas auditadas pelo próprio cliente antes e depois da implementação.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- Case 1 -->
+        <div class="case-card card-border rounded-2xl">
+          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop')">
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">4 UNIDADES · BH</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-white font-bold text-xl mb-2">Rede Sabores Mineiros</h3>
+            <p class="text-slate-500 text-sm mb-4">Rede de parrillas e restaurantes tradicionais — Belo Horizonte/MG</p>
+
+            <div class="space-y-3 mb-5">
+              <div>
+                <p class="text-xs font-semibold text-red-400 uppercase tracking-wide">Desafio</p>
+                <p class="text-sm text-slate-300 mt-1">4 unidades operando com sistemas de PDV diferentes e nenhuma consolidação entre elas. Fechamento financeiro mensal levava 5 dias úteis.</p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Solução</p>
+                <p class="text-sm text-slate-300 mt-1">Pipeline multi-tenant com extractors dedicados por unidade + dashboard unificado com drill-down por loja.</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-4 border-t border-emerald-500/15">
+              <div>
+                <p class="text-2xl font-black text-emerald-400">R$ 23k</p>
+                <p class="text-xs text-slate-500">/mês recuperados</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">58h</p>
+                <p class="text-xs text-slate-500">/mês devolvidas</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">1.8x</p>
+                <p class="text-xs text-slate-500">ROI em 60 dias</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="case-card card-border rounded-2xl">
+          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=500&fit=crop')">
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">HAMBURGUERIA · SP</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-white font-bold text-xl mb-2">Hamburgueria Urbano</h3>
+            <p class="text-slate-500 text-sm mb-4">Alta rotação, 70% delivery — Vila Madalena/SP</p>
+
+            <div class="space-y-3 mb-5">
+              <div>
+                <p class="text-xs font-semibold text-red-400 uppercase tracking-wide">Desafio</p>
+                <p class="text-sm text-slate-300 mt-1">Comissão iFood variável (23%, 27%, 30%) por promoção. Impossível saber a margem real de cada hamburguer vendido.</p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Solução</p>
+                <p class="text-sm text-slate-300 mt-1">ETL com parsing de regras dinâmicas de comissão + margem por SKU em tempo real via API do iFood.</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-4 border-t border-emerald-500/15">
+              <div>
+                <p class="text-2xl font-black text-emerald-400">R$ 8.4k</p>
+                <p class="text-xs text-slate-500">/mês recuperados</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">3.2m</p>
+                <p class="text-xs text-slate-500">Payback completo</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">100%</p>
+                <p class="text-xs text-slate-500">Conciliação iFood</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="case-card card-border rounded-2xl">
+          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop')">
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">ENTERPRISE · 8 UNIDADES</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-white font-bold text-xl mb-2">Grupo Gastronômico Bella Vita</h3>
+            <p class="text-slate-500 text-sm mb-4">Italiana premium, 8 unidades — Curitiba, SP e Florianópolis</p>
+
+            <div class="space-y-3 mb-5">
+              <div>
+                <p class="text-xs font-semibold text-red-400 uppercase tracking-wide">Desafio</p>
+                <p class="text-sm text-slate-300 mt-1">Grupo com operação multi-cidade precisava integrar 3 adquirentes diferentes e 5 canais de delivery, com DRE consolidado para o conselho.</p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Solução</p>
+                <p class="text-sm text-slate-300 mt-1">Data warehouse customizado com arquitetura medallion (Bronze/Silver/Gold) + dashboard executivo para o C-level.</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-4 border-t border-emerald-500/15">
+              <div>
+                <p class="text-2xl font-black text-emerald-400">R$ 47k</p>
+                <p class="text-xs text-slate-500">/mês recuperados</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">220h</p>
+                <p class="text-xs text-slate-500">/mês em relatórios</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">+12%</p>
+                <p class="text-xs text-slate-500">Margem operacional</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case 4 -->
+        <div class="case-card card-border rounded-2xl">
+          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=500&fit=crop')">
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">JAPONESA PREMIUM · 2 UNIDADES</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-white font-bold text-xl mb-2">Sushi Yamamoto Premium</h3>
+            <p class="text-slate-500 text-sm mb-4">Ticket médio alto, operação complexa — Moema e Itaim/SP</p>
+
+            <div class="space-y-3 mb-5">
+              <div>
+                <p class="text-xs font-semibold text-red-400 uppercase tracking-wide">Desafio</p>
+                <p class="text-sm text-slate-300 mt-1">7 adquirentes diferentes (Stone, Cielo, Rede, Getnet, SumUp, etc.), auditoria mensal da contabilidade levando 35h para reconciliar.</p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Solução</p>
+                <p class="text-sm text-slate-300 mt-1">Parser universal de adquirentes + trilha de auditoria LGPD-compliant para a contabilidade externa.</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-4 border-t border-emerald-500/15">
+              <div>
+                <p class="text-2xl font-black text-emerald-400">35h → 2h</p>
+                <p class="text-xs text-slate-500">Fechamento mensal</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">R$ 14k</p>
+                <p class="text-xs text-slate-500">Em chargebacks detectados</p>
+              </div>
+              <div>
+                <p class="text-2xl font-black text-emerald-400">7/7</p>
+                <p class="text-xs text-slate-500">Adquirentes integrados</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Disclaimer -->
+      <p class="text-center text-xs text-slate-600 mt-10 max-w-2xl mx-auto">
+        * Nomes de clientes exibidos com autorização. Métricas auditadas mensalmente pelo próprio cliente via relatório Excel gerado pelo pipeline.
+      </p>
 
     </div>
   </section>
