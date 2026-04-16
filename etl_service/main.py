@@ -29,6 +29,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
 
+from etl_service.api import alerts as alerts_router
+from etl_service.api import leads as leads_router
+from etl_service.api import metrics as metrics_router
 from etl_service.config import settings
 from etl_service.extractors.ifood import IfoodExtractor
 from etl_service.extractors.pdv import PDVExtractor
@@ -115,6 +118,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ====================================================================== #
+# Register routers (metrics dashboard, alerts, lead capture)
+# ====================================================================== #
+
+API_PREFIX = f"/api/{settings.api_version}"
+
+app.include_router(metrics_router.router, prefix=API_PREFIX)
+app.include_router(alerts_router.router,  prefix=API_PREFIX)
+app.include_router(leads_router.router,   prefix=API_PREFIX)
 
 
 # ====================================================================== #
