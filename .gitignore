@@ -1,0 +1,84 @@
+# ============================================
+# DataFlow Finance — .gitignore
+# ============================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Virtual environments ---
+venv/
+env/
+ENV/
+.venv/
+.env
+.env.local
+.env.*.local
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Logs and runtime data ---
+logs/
+*.log
+pids/
+*.pid
+
+# --- ETL output (never commit client data) ---
+output/
+*.xlsx
+*.xls
+!docs/samples/*.xlsx
+temp/
+tmp/
+
+# --- Sensitive data ---
+credentials/
+secrets/
+*.pem
+*.key
+*.p12
+
+# --- Testing ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+coverage.xml
+
+# --- Jupyter ---
+.ipynb_checkpoints
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Docker ---
+.dockerignore.bak

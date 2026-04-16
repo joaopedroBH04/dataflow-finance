@@ -1,0 +1,25 @@
+# ================================================================
+# DataFlow Finance ETL — Python dependencies
+# ================================================================
+# Pin minor versions for reproducibility; patch versions are free.
+
+# --- Web framework ---
+fastapi>=0.111,<0.112
+uvicorn[standard]>=0.29,<0.30
+
+# --- Data processing ---
+pandas>=2.2,<3.0
+numpy>=1.26,<2.0
+openpyxl>=3.1,<4.0          # Required by pandas for Excel output
+
+# --- Validation ---
+pydantic>=2.7,<3.0
+pydantic-settings>=2.3,<3.0
+
+# --- Logging ---
+loguru>=0.7,<1.0
+
+# --- Dev / testing (install with: pip install -r requirements-dev.txt) ---
+# pytest>=8.0
+# pytest-asyncio>=0.23
+# httpx>=0.27          # For FastAPI TestClient async support
