@@ -1900,6 +1900,152 @@
     </div>
   </section>
 
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       FAQ — Objection Handling
+       ============================================================ -->
+  <section id="faq" class="py-24 bg-navy-950">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-14">
+        <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Perguntas Frequentes</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-4">
+          Tiramos as dúvidas <span class="gradient-text">antes da reunião.</span>
+        </h2>
+        <p class="text-slate-400">
+          As 8 perguntas que mais ouvimos de donos de restaurante que estão avaliando contratar infraestrutura dedicada.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Minha equipe técnica vai ter que aprender Python ou SQL?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">Não.</strong> O pipeline roda automaticamente em segundo plano. Sua equipe financeira continua usando Excel normalmente — o que muda é que o Excel agora é gerado automaticamente pelo nosso motor, já consolidado e reconciliado. Se você quiser, podemos também entregar um dashboard web para eliminar até o Excel.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Preciso pagar mensalidade recorrente de software?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">Não existe mensalidade de software.</strong> O que cobramos é um <strong>investimento único</strong> no projeto de construção do pipeline. O código fica hospedado na sua própria infraestrutura (ou na nossa, como serviço opcional) e é <strong>seu para sempre</strong>. Oferecemos, opcionalmente, um plano de suporte e hospedagem gerenciada (R$ 290–590/mês), mas ele não é obrigatório — é só se você quiser que cuidemos da operação.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Meu PDV/plataforma não está na lista de integrações, e agora?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">Construímos o extractor em até 48 horas.</strong> A arquitetura é feita para isso. Qualquer sistema que permita exportar CSV, XLSX, ou que ofereça uma API REST, consegue ser integrado. Já trabalhamos com sistemas que muitos consultores nem sabem que existem. No plano Enterprise, esse desenvolvimento não tem custo adicional; nos outros planos, é um adicional de R$ 800 por integração custom.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Como fica a LGPD? Vou precisar enviar dados de clientes?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">LGPD by design.</strong> Por padrão, o pipeline só processa dados financeiros (valores, horários, formas de pagamento) — <strong>nunca dados pessoais de clientes</strong>. Se houver CPF/nome em alguma exportação, anonimizamos automaticamente no primeiro estágio da pipeline, antes mesmo de qualquer processamento. Para Enterprise, emitimos relatório de conformidade LGPD assinado digitalmente, anexável ao seu RIPD.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Quanto tempo leva da assinatura do contrato até estar rodando?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">30 a 45 dias corridos.</strong> Dividimos em 3 sprints de duas semanas: Sprint 1 — Auditoria técnica e setup da infra. Sprint 2 — Desenvolvimento dos extractors e do motor ETL. Sprint 3 — Testes paralelos com seus dados reais, ajustes finos e deploy. A partir do dia 45, o pipeline já está rodando em produção com o primeiro DRE automatizado na sua mesa.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">E se eu quiser cancelar? O código some comigo?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">O código é seu desde o dia do deploy.</strong> Este é o diferencial central do nosso modelo. Se você decidir não renovar o plano de suporte, o pipeline continua funcionando exatamente como foi entregue. Você recebe todo o código-fonte, documentação técnica completa, diagramas de arquitetura e vídeos de handoff. Se quiser contratar outro fornecedor ou levar para dentro, é só levar.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Como funciona o suporte após o go-live?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            Todo plano inclui um <strong class="text-white">período de suporte grátis</strong> (30d Starter, 90d Professional, 12 meses Enterprise). Depois disso, você pode contratar o plano mensal de suporte. Canal direto via WhatsApp Business com engenheiro sênior, SLA de resposta em 4h úteis (1h no Enterprise) e ajustes de regras de negócio inclusos no pacote de horas mensal. Sem chamado no sistema de helpdesk, sem ticket número 48.392.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Vocês emitem nota fiscal? É PJ?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">Sim, 100% formalizado.</strong> DataFlow Finance é uma prestadora de serviços registrada (Simples Nacional), emitimos NFS-e pelo portal da prefeitura, com código de serviço 1.05 (licenciamento de software) ou 1.04 (programação sob encomenda), conforme o contrato. Aceitamos boleto, PIX e transferência — sem juros se pago em até 30 dias da entrega. Parcelamento em até 3x sem juros para Professional e Enterprise.
+          </div>
+        </details>
+
+      </div>
+
+      <!-- Ask more -->
+      <div class="text-center mt-10">
+        <p class="text-slate-500 text-sm mb-3">Tem uma pergunta específica do seu caso?</p>
+        <a href="https://wa.me/5531999999999?text=Olá,%20tenho%20uma%20dúvida%20sobre%20a%20infraestrutura%20ETL%20da%20DataFlow%20Finance"
+          target="_blank"
+          class="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-semibold text-sm transition-colors">
+          Fale com um engenheiro agora pelo WhatsApp
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WHATSAPP FLOATING BUTTON
+       ============================================================ -->
+  <a href="https://wa.me/5531999999999?text=Olá!%20Gostaria%20de%20uma%20auditoria%20financeira%20gratuita%20do%20meu%20restaurante."
+    target="_blank"
+    class="whatsapp-float"
+    aria-label="Falar no WhatsApp">
+    <svg class="w-7 h-7" fill="#ffffff" viewBox="0 0 24 24">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  </a>
+
   <!-- ============================================================
        FOOTER
        ============================================================ -->
