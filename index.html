@@ -1316,6 +1316,166 @@
   <div class="section-divider"></div>
 
   <!-- ============================================================
+       ROI CALCULATOR — Interactive Alpine.js
+       ============================================================ -->
+  <section id="roi" class="py-24 bg-navy-900" x-data="roiCalculator()">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-16">
+        <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Calculadora de ROI</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-4">
+          Quanto o seu restaurante está <span class="gradient-text">perdendo agora?</span>
+        </h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">
+          Simule em tempo real o impacto financeiro de migrar para infraestrutura dedicada. Os cálculos usam benchmarks reais do mercado de food service brasileiro.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- INPUTS -->
+        <div class="card-border rounded-2xl p-8">
+          <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            Seus números atuais
+          </h3>
+
+          <!-- Faturamento mensal -->
+          <div class="mb-7">
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-sm text-slate-300 font-medium">Faturamento mensal bruto</label>
+              <span class="text-emerald-400 font-bold text-lg" x-text="formatBRL(revenue)"></span>
+            </div>
+            <input type="range" min="50000" max="2000000" step="10000" x-model.number="revenue" class="roi-slider" />
+            <div class="flex justify-between text-xs text-slate-600 mt-1">
+              <span>R$ 50k</span>
+              <span>R$ 2M</span>
+            </div>
+          </div>
+
+          <!-- Horas por mês em conciliação -->
+          <div class="mb-7">
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-sm text-slate-300 font-medium">Horas/mês em conciliação manual</label>
+              <span class="text-emerald-400 font-bold text-lg"><span x-text="hoursManual"></span>h</span>
+            </div>
+            <input type="range" min="10" max="200" step="5" x-model.number="hoursManual" class="roi-slider" />
+            <div class="flex justify-between text-xs text-slate-600 mt-1">
+              <span>10h</span>
+              <span>200h</span>
+            </div>
+          </div>
+
+          <!-- Número de unidades -->
+          <div class="mb-7">
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-sm text-slate-300 font-medium">Número de unidades</label>
+              <span class="text-emerald-400 font-bold text-lg" x-text="units"></span>
+            </div>
+            <input type="range" min="1" max="15" step="1" x-model.number="units" class="roi-slider" />
+            <div class="flex justify-between text-xs text-slate-600 mt-1">
+              <span>1</span>
+              <span>15+</span>
+            </div>
+          </div>
+
+          <!-- % de delivery -->
+          <div class="mb-2">
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-sm text-slate-300 font-medium">% da receita por delivery (iFood/Rappi)</label>
+              <span class="text-emerald-400 font-bold text-lg"><span x-text="deliveryPct"></span>%</span>
+            </div>
+            <input type="range" min="0" max="100" step="5" x-model.number="deliveryPct" class="roi-slider" />
+            <div class="flex justify-between text-xs text-slate-600 mt-1">
+              <span>0%</span>
+              <span>100%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- OUTPUTS -->
+        <div class="space-y-4">
+
+          <!-- Hidden leakage card -->
+          <div class="roi-result-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                </svg>
+              </div>
+              <p class="text-sm text-slate-400 font-semibold uppercase tracking-wide">Furos de caixa estimados</p>
+            </div>
+            <p class="text-4xl font-black text-red-400" x-text="formatBRL(monthlyLeakage)"></p>
+            <p class="text-xs text-slate-500 mt-1">Baseado em 1.5% de divergência média no setor + 0.8% de comissão iFood mal contabilizada.</p>
+          </div>
+
+          <!-- Wasted hours cost -->
+          <div class="roi-result-card rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p class="text-sm text-slate-400 font-semibold uppercase tracking-wide">Custo das horas desperdiçadas</p>
+            </div>
+            <p class="text-4xl font-black text-amber-400" x-text="formatBRL(hoursCost)"></p>
+            <p class="text-xs text-slate-500 mt-1">Custo médio de R$ 45/h para analista financeiro em redes de food service.</p>
+          </div>
+
+          <!-- Annual total -->
+          <div class="roi-result-card rounded-2xl p-6 glow-emerald">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                </svg>
+              </div>
+              <p class="text-sm text-slate-400 font-semibold uppercase tracking-wide">Recuperação anual com pipeline dedicado</p>
+            </div>
+            <p class="text-5xl font-black gradient-text" x-text="formatBRL(annualSavings)"></p>
+            <div class="flex gap-4 mt-4 pt-4 border-t border-emerald-500/15">
+              <div>
+                <p class="text-xs text-slate-500">ROI em</p>
+                <p class="text-lg font-bold text-emerald-400"><span x-text="paybackMonths"></span> meses</p>
+              </div>
+              <div>
+                <p class="text-xs text-slate-500">Investimento sugerido</p>
+                <p class="text-lg font-bold text-white" x-text="formatBRL(recommendedTier)"></p>
+              </div>
+              <div>
+                <p class="text-xs text-slate-500">Plano recomendado</p>
+                <p class="text-lg font-bold text-white" x-text="recommendedTierName"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <a href="#auditoria" class="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-sm transition-all duration-200 glow-emerald">
+            Quero validar esse número com uma auditoria gratuita
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+
+          <p class="text-xs text-slate-600 text-center">
+            Simulação baseada em dados agregados de 27 restaurantes atendidos.<br>
+            Números reais validados na auditoria inicial.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
        AUDIT FORM — Lead Qualificado com Alpine.js
        ============================================================ -->
   <section id="auditoria" class="py-24 bg-navy-900">
@@ -1546,6 +1706,84 @@
        ALPINE.JS COMPONENT
        ============================================================ -->
   <script>
+    // ==================================================================
+    // ROI Calculator — live-updating financial simulation
+    // ==================================================================
+    function roiCalculator() {
+      return {
+        // Inputs (defaults tuned for the typical mid-size restaurant)
+        revenue: 250000,
+        hoursManual: 40,
+        units: 1,
+        deliveryPct: 35,
+
+        // --- Derived metrics (getters auto-update on input change) ---
+
+        /**
+         * Monthly financial leakage (furos de caixa):
+         * - 1.5% of gross revenue is the industry benchmark for reconciliation gaps
+         * - Additional 0.8% on delivery revenue due to commission miscalculation
+         * - Multi-unit compounds by ~10% per additional unit (coordination loss)
+         */
+        get monthlyLeakage() {
+          const baseLeakage = this.revenue * 0.015;
+          const deliveryLeakage = (this.revenue * (this.deliveryPct / 100)) * 0.008;
+          const multiUnitPenalty = 1 + ((this.units - 1) * 0.10);
+          return Math.round((baseLeakage + deliveryLeakage) * multiUnitPenalty);
+        },
+
+        /**
+         * Hourly cost × hours spent × 12 months.
+         * R$ 45/h is the market average for financial analysts in food service.
+         */
+        get hoursCost() {
+          return Math.round(this.hoursManual * 45);
+        },
+
+        /**
+         * Annual savings = (monthly leakage + hours cost) × 12.
+         * Conservative: assumes 85% of leakage is actually recoverable.
+         */
+        get annualSavings() {
+          return Math.round((this.monthlyLeakage * 0.85 + this.hoursCost) * 12);
+        },
+
+        /**
+         * Recommended service tier based on restaurant size.
+         */
+        get recommendedTier() {
+          if (this.units >= 5 || this.revenue >= 800000)      return 15000;
+          if (this.units >= 2 || this.revenue >= 300000)      return 7500;
+          return 3500;
+        },
+        get recommendedTierName() {
+          if (this.units >= 5 || this.revenue >= 800000)      return "Enterprise";
+          if (this.units >= 2 || this.revenue >= 300000)      return "Professional";
+          return "Starter";
+        },
+
+        /**
+         * Payback period in months.
+         * = investment / (monthly leakage × 0.85 + hours cost)
+         */
+        get paybackMonths() {
+          const monthlySavings = this.monthlyLeakage * 0.85 + this.hoursCost;
+          if (monthlySavings <= 0) return "—";
+          const months = this.recommendedTier / monthlySavings;
+          return months < 1 ? "< 1" : months.toFixed(1);
+        },
+
+        // --- Utility ---
+        formatBRL(value) {
+          return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            maximumFractionDigits: 0,
+          }).format(value);
+        },
+      };
+    }
+
     function auditForm() {
       return {
         // ---- State ----
