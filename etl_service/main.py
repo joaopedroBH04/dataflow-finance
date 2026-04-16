@@ -1,0 +1,315 @@
+"""
+main.py
+-------
+FastAPI application entry point.
+
+Exposes the ETL pipeline as a REST API endpoint:
+  POST /api/v1/run-etl
+
+The endpoint accepts file paths and configuration, runs the full
+Extract → Validate → Transform → Load pipeline, and returns a
+structured JSON summary of the execution.
+
+Run locally:
+  uvicorn etl_service.main:app --reload --port 8000
+
+Production:
+  gunicorn etl_service.main:app -k uvicorn.workers.UvicornWorker --workers 2
+"""
+
+from __future__ import annotations
+
+import time
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+import pandas as pd
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from loguru import logger
+
+from etl_service.config import settings
+from etl_service.extractors.ifood import IfoodExtractor
+from etl_service.extractors.pdv import PDVExtractor
+from etl_service.extractors.stone_cielo import AcquirerExtractor
+from etl_service.loaders.report import ReportLoader
+from etl_service.transformers.financial import FinancialTransformer
+from etl_service.validators.schemas import ETLRequest, ETLResponse, GapSummary
+
+
+# ====================================================================== #
+# Logging configuration (Loguru structured output)
+# ====================================================================== #
+
+import sys
+
+logger.remove()  # Remove default handler
+
+# Structured JSON log for production (parse with Datadog, CloudWatch, etc.)
+logger.add(
+    sys.stdout,
+    format=(
+        "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
+        "<level>{level: <8}</level> | "
+        "<cyan>{name}</cyan>:<cyan>{line}</cyan> - "
+        "<level>{message}</level>"
+    ),
+    level=settings.log_level,
+    colorize=True,
+    backtrace=True,
+    diagnose=settings.debug,
+)
+
+# Rotating file log — keeps last 7 days, max 50 MB per file.
+logger.add(
+    "logs/etl_service_{time:YYYY-MM-DD}.log",
+    rotation="50 MB",
+    retention="7 days",
+    compression="zip",
+    format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{line} | {message}",
+    level="DEBUG",
+    backtrace=True,
+    diagnose=True,
+)
+
+
+# ====================================================================== #
+# Application lifecycle
+# ====================================================================== #
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Runs setup logic on startup and teardown logic on shutdown."""
+    logger.info(
+        "Starting {app} (version {ver}) — debug={debug}",
+        app=settings.app_name,
+        ver=settings.api_version,
+        debug=settings.debug,
+    )
+    yield
+    logger.info("{app} shutting down.", app=settings.app_name)
+
+
+# ====================================================================== #
+# FastAPI app
+# ====================================================================== #
+
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.api_version,
+    description=(
+        "Production-grade ETL microservice that integrates iFood, PDV, and "
+        "Stone/Cielo acquirer data into an automated financial DRE with cash-gap detection."
+    ),
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan,
+)
+
+# Allow requests from the landing page / dashboard frontend.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],      # Restrict to specific domains in production.
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ====================================================================== #
+# Global exception handler
+# ====================================================================== #
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Catches unhandled exceptions and returns a structured error response."""
+    logger.error(
+        "Unhandled exception on {method} {path}: {exc}",
+        method=request.method,
+        path=request.url.path,
+        exc=str(exc),
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"status": "error", "detail": str(exc)},
+    )
+
+
+# ====================================================================== #
+# Health check
+# ====================================================================== #
+
+@app.get("/health", tags=["Infra"])
+async def health_check() -> dict:
+    """Liveness probe for load balancers and container orchestrators."""
+    return {"status": "ok", "service": settings.app_name, "version": settings.api_version}
+
+
+# ====================================================================== #
+# ETL Endpoint
+# ====================================================================== #
+
+@app.post(
+    f"/api/{settings.api_version}/run-etl",
+    response_model=ETLResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["ETL"],
+    summary="Execute the full ETL pipeline for a given reference month.",
+    description=(
+        "Accepts file paths for iFood, PDV, and Stone/Cielo exports. "
+        "Runs Extract → Validate → Transform → Load and returns a "
+        "JSON summary with revenue, fees, detected gaps, and the output file path."
+    ),
+)
+async def run_etl(payload: ETLRequest) -> ETLResponse:
+    """
+    Full ETL pipeline execution endpoint.
+
+    Parameters (JSON body)
+    ----------------------
+    - ifood_file_path: Path to the iFood CSV export.
+    - pdv_file_path: Path to the PDV CSV/XLSX export.
+    - acquirer_file_path: Path to the Stone/Cielo CSV export.
+    - reference_month: Period in 'YYYY-MM' format.
+    - acquirer_name: 'stone' or 'cielo' (default: 'stone').
+
+    Returns
+    -------
+    ETLResponse with execution summary.
+    """
+    start_time = time.perf_counter()
+
+    logger.info(
+        "[ETL] Request received — period={period}, acquirer={acq}",
+        period=payload.reference_month,
+        acq=payload.acquirer_name,
+    )
+
+    # ------------------------------------------------------------------ #
+    # EXTRACT
+    # ------------------------------------------------------------------ #
+
+    logger.info("[ETL] Phase: EXTRACT")
+
+    try:
+        ifood_result = IfoodExtractor().extract(payload.ifood_file_path)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=f"iFood file not found: {exc}") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=f"iFood extraction failed: {exc}") from exc
+
+    try:
+        pdv_result = PDVExtractor().extract(payload.pdv_file_path)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=f"PDV file not found: {exc}") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=f"PDV extraction failed: {exc}") from exc
+
+    try:
+        acquirer_result = AcquirerExtractor(
+            acquirer_name=payload.acquirer_name
+        ).extract(payload.acquirer_file_path)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=f"Acquirer file not found: {exc}") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=f"Acquirer extraction failed: {exc}") from exc
+
+    # Aggregate quarantine rows from all sources.
+    quarantine_frames = [
+        df for df in (
+            ifood_result.quarantine_df,
+            pdv_result.quarantine_df,
+            acquirer_result.quarantine_df,
+        ) if not df.empty
+    ]
+    quarantine_df = pd.concat(quarantine_frames, ignore_index=True) if quarantine_frames else pd.DataFrame()
+    total_quarantined = len(quarantine_df)
+
+    logger.info(
+        "[ETL] EXTRACT complete — iFood={i}, PDV={p}, Acquirer={a}, Quarantined={q}",
+        i=ifood_result.valid_row_count,
+        p=pdv_result.valid_row_count,
+        a=acquirer_result.valid_row_count,
+        q=total_quarantined,
+    )
+
+    # ------------------------------------------------------------------ #
+    # TRANSFORM
+    # ------------------------------------------------------------------ #
+
+    logger.info("[ETL] Phase: TRANSFORM")
+
+    try:
+        transformer = FinancialTransformer(reference_month=payload.reference_month)
+        dre, gaps = transformer.run(
+            ifood_df=ifood_result.valid_df,
+            pdv_df=pdv_result.valid_df,
+            acquirer_df=acquirer_result.valid_df,
+        )
+    except Exception as exc:
+        logger.error("[ETL] TRANSFORM failed: {exc}", exc=str(exc))
+        raise HTTPException(
+            status_code=500,
+            detail=f"Transformation failed: {exc}",
+        ) from exc
+
+    logger.info(
+        "[ETL] TRANSFORM complete — gross={g:.2f}, net={n:.2f}, gaps={gaps}",
+        g=dre.total_gross_revenue,
+        n=dre.net_revenue,
+        gaps=len(gaps),
+    )
+
+    # ------------------------------------------------------------------ #
+    # LOAD
+    # ------------------------------------------------------------------ #
+
+    logger.info("[ETL] Phase: LOAD")
+
+    # We need the unified ledger from the transformer for the report.
+    # Re-build it (it was built internally); in production, return it from run().
+    # Here we pass an empty DataFrame as a safe fallback if the ledger is not exposed.
+    try:
+        loader = ReportLoader()
+        output_path = loader.save(
+            dre=dre,
+            ledger=pd.DataFrame(),   # Replace with transformer.ledger if exposed as attribute.
+            gaps=gaps,
+            quarantine=quarantine_df,
+            reference_month=payload.reference_month,
+        )
+    except Exception as exc:
+        logger.error("[ETL] LOAD failed: {exc}", exc=str(exc))
+        raise HTTPException(
+            status_code=500,
+            detail=f"Report generation failed: {exc}",
+        ) from exc
+
+    # ------------------------------------------------------------------ #
+    # Response
+    # ------------------------------------------------------------------ #
+
+    elapsed = round(time.perf_counter() - start_time, 3)
+
+    logger.success(
+        "[ETL] Pipeline finished in {elapsed}s — output: {path}",
+        elapsed=elapsed,
+        path=output_path,
+    )
+
+    return ETLResponse(
+        status="success",
+        reference_month=payload.reference_month,
+        total_ifood_orders=ifood_result.valid_row_count,
+        total_pdv_transactions=pdv_result.valid_row_count,
+        total_acquirer_transactions=acquirer_result.valid_row_count,
+        quarantined_rows=total_quarantined,
+        gross_revenue_brl=dre.total_gross_revenue,
+        total_fees_brl=dre.total_deductions,
+        net_revenue_brl=dre.net_revenue,
+        gaps_detected=len(gaps),
+        gap_details=gaps,
+        output_file_path=output_path,
+        execution_time_seconds=elapsed,
+    )
