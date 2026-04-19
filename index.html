@@ -453,6 +453,19 @@
 
 <body x-data="auditForm()" class="antialiased">
 
+  <!-- Scroll progress bar (width controlada por JS) -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Scroll-to-top button (aparece após 420px de scroll) -->
+  <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo" title="Voltar ao topo">
+    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+    </svg>
+  </button>
+
+  <!-- Toast notification (gerenciado via window.showToast) -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
   <!-- ============================================================
        NAVBAR — Sticky Glassmorphism
        ============================================================ -->
