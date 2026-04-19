@@ -2472,16 +2472,16 @@
             }
 
             this.submitted = true;
+            document.dispatchEvent(new CustomEvent('lead:submitted'));
 
           } catch (err) {
-            // Fallback gracefully when the API is unreachable — still show success
-            // (the lead is captured via a redundant WhatsApp nudge).
             console.warn('Lead capture API unreachable:', err);
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
               this.formError = 'API indisponível. Inicie o servidor: python -m uvicorn etl_service.main:app --port 8000';
+              document.dispatchEvent(new CustomEvent('lead:error', { detail: { message: 'API offline. Inicie o servidor para capturar o lead.' } }));
             } else {
-              // In production, we still show success + recommend WhatsApp fallback.
               this.submitted = true;
+              document.dispatchEvent(new CustomEvent('lead:submitted'));
             }
           } finally {
             this.loading = false;
@@ -2490,18 +2490,131 @@
       };
     }
 
-    // ---- Scroll reveal ----
-    document.addEventListener('DOMContentLoaded', () => {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('visible');
-            observer.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.1 });
+    // ==================================================================
+    // SCROLL PROGRESS BAR
+    // ==================================================================
+    (function () {
+      const bar = document.getElementById('scroll-progress');
+      if (!bar) return;
+      function update() {
+        const pct = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (pct > 0 ? (window.scrollY / pct) * 100 : 0).toFixed(2) + '%';
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    })();
 
-      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    // ==================================================================
+    // SCROLL-TO-TOP BUTTON
+    // ==================================================================
+    (function () {
+      const btn = document.getElementById('scroll-top');
+      if (!btn) return;
+      window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > 420);
+      }, { passive: true });
+    })();
+
+    // ==================================================================
+    // TOAST NOTIFICATION  →  window.showToast(msg, type, duration)
+    // ==================================================================
+    window.showToast = (function () {
+      const el = document.getElementById('toast');
+      let timer = null;
+      return function (message, type = 'success', duration = 3500) {
+        if (!el) return;
+        clearTimeout(timer);
+        el.textContent = message;
+        el.className = `toast toast-${type} show`;
+        timer = setTimeout(() => el.classList.remove('show'), duration);
+      };
+    })();
+
+    // ==================================================================
+    // SCROLL REVEAL
+    // ==================================================================
+    (function () {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    })();
+
+    // ==================================================================
+    // ANIMATED NUMBER COUNTERS  —  [data-count] elements
+    // ==================================================================
+    (function () {
+      function animateCounter(el) {
+        const target = parseInt(el.dataset.count, 10);
+        const suffix = el.dataset.suffix || '';
+        const fmt    = el.dataset.format  || '';
+        const dur    = 1600;
+        const start  = performance.now();
+        function step(now) {
+          const eased  = 1 - Math.pow(1 - Math.min((now - start) / dur, 1), 3);
+          const current = Math.round(eased * target);
+          el.textContent = (fmt === 'thousands' ? current.toLocaleString('pt-BR') : current) + suffix;
+          if (eased < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); io.unobserve(e.target); } });
+      }, { threshold: 0.5 });
+      document.querySelectorAll('[data-count]').forEach(el => io.observe(el));
+    })();
+
+    // ==================================================================
+    // ACTIVE NAV LINK  —  highlight da seção visível no momento
+    // ==================================================================
+    (function () {
+      const links = document.querySelectorAll('.nav-link[data-nav]');
+      if (!links.length) return;
+      const sections = [...links].map(a => document.getElementById(a.dataset.nav)).filter(Boolean);
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting)
+            links.forEach(a => a.classList.toggle('active', a.dataset.nav === entry.target.id));
+        });
+      }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+      sections.forEach(s => io.observe(s));
+    })();
+
+    // ==================================================================
+    // API HEALTH CHECK  —  atualiza widget no footer
+    // ==================================================================
+    (function () {
+      const dot   = document.getElementById('api-dot');
+      const label = document.getElementById('api-status-text');
+      const docs  = document.getElementById('api-docs-link');
+      if (!dot || !label) return;
+      const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        ? 'http://localhost:8000' : 'https://api.dataflowfinance.com.br';
+      fetch(`${API}/health`, { signal: AbortSignal.timeout(4000) })
+        .then(r => r.json())
+        .then(data => {
+          dot.className = 'api-dot api-online';
+          label.textContent = `API online · ${data.version || 'v1'}`;
+          if (docs) docs.classList.remove('hidden');
+          if (!sessionStorage.getItem('api_ok')) {
+            window.showToast('✓ API conectada e operacional', 'success', 2800);
+            sessionStorage.setItem('api_ok', '1');
+          }
+        })
+        .catch(() => {
+          dot.className = 'api-dot api-offline';
+          label.textContent = 'API offline — inicie o servidor local';
+        });
+    })();
+
+    // ==================================================================
+    // FORM EVENTS  —  toast ao submeter / erro
+    // ==================================================================
+    document.addEventListener('alpine:initialized', () => {
+      document.addEventListener('lead:submitted', () =>
+        window.showToast('✓ Solicitação recebida! Retornaremos em até 48h.', 'success', 4500));
+      document.addEventListener('lead:error', e =>
+        window.showToast(e.detail?.message || 'Erro ao enviar. Tente novamente.', 'error', 4000));
     });
   </script>
 
