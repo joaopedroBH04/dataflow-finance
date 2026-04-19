@@ -24,7 +24,7 @@ from enum import Enum
 from typing import Optional
 
 import httpx
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Response, status
 from loguru import logger
 from pydantic import AnyHttpUrl, BaseModel, Field
 
@@ -122,12 +122,17 @@ async def list_subscribers() -> list[AlertSubscriber]:
     return list(_SUBSCRIBERS.values())
 
 
-@router.delete("/subscribers/{subscriber_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_subscriber(subscriber_id: str) -> None:
+@router.delete(
+    "/subscribers/{subscriber_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+async def delete_subscriber(subscriber_id: str) -> Response:
     if subscriber_id not in _SUBSCRIBERS:
         raise HTTPException(status_code=404, detail="Subscriber not found.")
     del _SUBSCRIBERS[subscriber_id]
     logger.info("[Alerts] Subscriber deleted — id={id}", id=subscriber_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 # ---------------------------------------------------------------------- #
