@@ -333,6 +333,11 @@
       border: 3px solid #020817;
       cursor: pointer;
     }
+    .roi-slider:focus-visible {
+      outline: 2px solid rgba(16, 185, 129, 0.8);
+      outline-offset: 4px;
+      border-radius: 3px;
+    }
 
     /* --- Pricing card --- */
     .pricing-card {
@@ -453,6 +458,9 @@
 
 <body x-data="auditForm()" class="antialiased">
 
+  <!-- Skip to main content (keyboard / screen-reader nav) -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-navy-950 focus:font-bold focus:rounded-lg focus:shadow-lg focus:outline-none">Pular para o conteúdo principal</a>
+
   <!-- Scroll progress bar (width controlada por JS) -->
   <div id="scroll-progress" aria-hidden="true"></div>
 
@@ -469,7 +477,7 @@
   <!-- ============================================================
        NAVBAR — Sticky Glassmorphism
        ============================================================ -->
-  <nav class="glass fixed top-0 left-0 right-0 z-50" x-data="{ mobileOpen: false }">
+  <nav class="glass fixed top-0 left-0 right-0 z-50" x-data="{ mobileOpen: false }" aria-label="Navegação principal">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
 
@@ -556,7 +564,7 @@
   <!-- ============================================================
        HERO SECTION — PAS: Problem
        ============================================================ -->
-  <section class="relative min-h-screen flex items-center pt-16 grid-pattern overflow-hidden">
+  <section id="main-content" class="relative min-h-screen flex items-center pt-16 grid-pattern overflow-hidden">
 
     <!-- Background glow orbs -->
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -1485,10 +1493,10 @@
           <!-- Faturamento mensal -->
           <div class="mb-7">
             <div class="flex justify-between items-center mb-2">
-              <label class="text-sm text-slate-300 font-medium">Faturamento mensal bruto</label>
-              <span class="text-emerald-400 font-bold text-lg" x-text="formatBRL(revenue)"></span>
+              <label for="roi-revenue" class="text-sm text-slate-300 font-medium">Faturamento mensal bruto</label>
+              <span class="text-emerald-400 font-bold text-lg" x-text="formatBRL(revenue)" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <input type="range" min="50000" max="2000000" step="10000" x-model.number="revenue" class="roi-slider" />
+            <input type="range" id="roi-revenue" min="50000" max="2000000" step="10000" x-model.number="revenue" class="roi-slider" :aria-valuenow="revenue" :aria-valuetext="formatBRL(revenue)" aria-valuemin="50000" aria-valuemax="2000000" />
             <div class="flex justify-between text-xs text-slate-600 mt-1">
               <span>R$ 50k</span>
               <span>R$ 2M</span>
@@ -1498,10 +1506,10 @@
           <!-- Horas por mês em conciliação -->
           <div class="mb-7">
             <div class="flex justify-between items-center mb-2">
-              <label class="text-sm text-slate-300 font-medium">Horas/mês em conciliação manual</label>
-              <span class="text-emerald-400 font-bold text-lg"><span x-text="hoursManual"></span>h</span>
+              <label for="roi-hours" class="text-sm text-slate-300 font-medium">Horas/mês em conciliação manual</label>
+              <span class="text-emerald-400 font-bold text-lg" aria-live="polite" aria-atomic="true"><span x-text="hoursManual"></span>h</span>
             </div>
-            <input type="range" min="10" max="200" step="5" x-model.number="hoursManual" class="roi-slider" />
+            <input type="range" id="roi-hours" min="10" max="200" step="5" x-model.number="hoursManual" class="roi-slider" :aria-valuenow="hoursManual" :aria-valuetext="hoursManual + ' horas por mês'" aria-valuemin="10" aria-valuemax="200" />
             <div class="flex justify-between text-xs text-slate-600 mt-1">
               <span>10h</span>
               <span>200h</span>
@@ -1511,10 +1519,10 @@
           <!-- Número de unidades -->
           <div class="mb-7">
             <div class="flex justify-between items-center mb-2">
-              <label class="text-sm text-slate-300 font-medium">Número de unidades</label>
-              <span class="text-emerald-400 font-bold text-lg" x-text="units"></span>
+              <label for="roi-units" class="text-sm text-slate-300 font-medium">Número de unidades</label>
+              <span class="text-emerald-400 font-bold text-lg" x-text="units" aria-live="polite" aria-atomic="true"></span>
             </div>
-            <input type="range" min="1" max="15" step="1" x-model.number="units" class="roi-slider" />
+            <input type="range" id="roi-units" min="1" max="15" step="1" x-model.number="units" class="roi-slider" :aria-valuenow="units" :aria-valuetext="units + ' unidades'" aria-valuemin="1" aria-valuemax="15" />
             <div class="flex justify-between text-xs text-slate-600 mt-1">
               <span>1</span>
               <span>15+</span>
@@ -1524,10 +1532,10 @@
           <!-- % de delivery -->
           <div class="mb-2">
             <div class="flex justify-between items-center mb-2">
-              <label class="text-sm text-slate-300 font-medium">% da receita por delivery (iFood/Rappi)</label>
-              <span class="text-emerald-400 font-bold text-lg"><span x-text="deliveryPct"></span>%</span>
+              <label for="roi-delivery" class="text-sm text-slate-300 font-medium">% da receita por delivery (iFood/Rappi)</label>
+              <span class="text-emerald-400 font-bold text-lg" aria-live="polite" aria-atomic="true"><span x-text="deliveryPct"></span>%</span>
             </div>
-            <input type="range" min="0" max="100" step="5" x-model.number="deliveryPct" class="roi-slider" />
+            <input type="range" id="roi-delivery" min="0" max="100" step="5" x-model.number="deliveryPct" class="roi-slider" :aria-valuenow="deliveryPct" :aria-valuetext="deliveryPct + '%'" aria-valuemin="0" aria-valuemax="100" />
             <div class="flex justify-between text-xs text-slate-600 mt-1">
               <span>0%</span>
               <span>100%</span>
@@ -1886,49 +1894,61 @@
         </div>
 
         <!-- Form -->
-        <form x-show="!submitted" @submit.prevent="handleSubmit()" class="space-y-5" novalidate>
+        <form x-show="!submitted" @submit.prevent="handleSubmit()" class="space-y-5" novalidate aria-label="Formulário de solicitação de auditoria gratuita">
 
           <!-- Nome -->
           <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-1.5">
-              Nome completo <span class="text-red-400">*</span>
+            <label for="field-name" class="block text-sm font-semibold text-slate-300 mb-1.5">
+              Nome completo <span class="text-red-400" aria-hidden="true">*</span>
             </label>
             <input
               type="text"
+              id="field-name"
               x-model="fields.name"
               @blur="touch('name')"
               :class="{ 'form-input-error': errors.name && touched.name }"
+              :aria-invalid="errors.name && touched.name ? 'true' : 'false'"
+              aria-required="true"
+              aria-describedby="field-name-error"
               class="form-input w-full px-4 py-3 rounded-xl text-sm"
               placeholder="Ex: João Silva"
             />
-            <p x-show="errors.name && touched.name" x-text="errors.name" class="mt-1.5 text-xs text-red-400"></p>
+            <p id="field-name-error" x-show="errors.name && touched.name" x-text="errors.name" class="mt-1.5 text-xs text-red-400" role="alert"></p>
           </div>
 
           <!-- Restaurante -->
           <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-1.5">
-              Nome do restaurante <span class="text-red-400">*</span>
+            <label for="field-restaurant" class="block text-sm font-semibold text-slate-300 mb-1.5">
+              Nome do restaurante <span class="text-red-400" aria-hidden="true">*</span>
             </label>
             <input
               type="text"
+              id="field-restaurant"
               x-model="fields.restaurant"
               @blur="touch('restaurant')"
               :class="{ 'form-input-error': errors.restaurant && touched.restaurant }"
+              :aria-invalid="errors.restaurant && touched.restaurant ? 'true' : 'false'"
+              aria-required="true"
+              aria-describedby="field-restaurant-error"
               class="form-input w-full px-4 py-3 rounded-xl text-sm"
               placeholder="Ex: Parrilla & Chopperia Horizonte"
             />
-            <p x-show="errors.restaurant && touched.restaurant" x-text="errors.restaurant" class="mt-1.5 text-xs text-red-400"></p>
+            <p id="field-restaurant-error" x-show="errors.restaurant && touched.restaurant" x-text="errors.restaurant" class="mt-1.5 text-xs text-red-400" role="alert"></p>
           </div>
 
           <!-- Faturamento -->
           <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-1.5">
-              Faturamento mensal estimado <span class="text-red-400">*</span>
+            <label for="field-revenue" class="block text-sm font-semibold text-slate-300 mb-1.5">
+              Faturamento mensal estimado <span class="text-red-400" aria-hidden="true">*</span>
             </label>
             <select
+              id="field-revenue"
               x-model="fields.revenue"
               @blur="touch('revenue')"
               :class="{ 'form-input-error': errors.revenue && touched.revenue }"
+              :aria-invalid="errors.revenue && touched.revenue ? 'true' : 'false'"
+              aria-required="true"
+              aria-describedby="field-revenue-error"
               class="form-input w-full px-4 py-3 rounded-xl text-sm appearance-none cursor-pointer"
             >
               <option value="" disabled selected>Selecione a faixa de faturamento</option>
@@ -1937,21 +1957,21 @@
               <option value="250k-500k">R$ 250.000 – R$ 500.000/mês</option>
               <option value="500k+">Acima de R$ 500.000/mês</option>
             </select>
-            <p x-show="errors.revenue && touched.revenue" x-text="errors.revenue" class="mt-1.5 text-xs text-red-400"></p>
+            <p id="field-revenue-error" x-show="errors.revenue && touched.revenue" x-text="errors.revenue" class="mt-1.5 text-xs text-red-400" role="alert"></p>
           </div>
 
           <!-- Sistemas -->
           <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">
-              Sistemas utilizados atualmente <span class="text-red-400">*</span>
-            </label>
-            <div class="grid grid-cols-2 gap-2">
+            <p id="systems-label" class="block text-sm font-semibold text-slate-300 mb-2">
+              Sistemas utilizados atualmente <span class="text-red-400" aria-hidden="true">*</span>
+            </p>
+            <div class="grid grid-cols-2 gap-2" role="group" aria-labelledby="systems-label" aria-describedby="field-systems-error">
               <template x-for="system in availableSystems" :key="system.id">
                 <label
                   :class="{ 'border-emerald-500/60 bg-emerald-500/10': fields.systems.includes(system.id), 'border-slate-700 hover:border-slate-500': !fields.systems.includes(system.id) }"
                   class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border cursor-pointer transition-all duration-150"
                 >
-                  <input type="checkbox" :value="system.id" x-model="fields.systems" @change="touch('systems')" class="hidden" />
+                  <input type="checkbox" :value="system.id" x-model="fields.systems" @change="touch('systems')" class="sr-only" />
                   <span
                     :class="{ 'bg-emerald-500 border-emerald-500': fields.systems.includes(system.id), 'border-slate-600': !fields.systems.includes(system.id) }"
                     class="w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all"
@@ -1964,25 +1984,29 @@
                 </label>
               </template>
             </div>
-            <p x-show="errors.systems && touched.systems" x-text="errors.systems" class="mt-1.5 text-xs text-red-400"></p>
+            <p id="field-systems-error" x-show="errors.systems && touched.systems" x-text="errors.systems" class="mt-1.5 text-xs text-red-400" role="alert"></p>
           </div>
 
           <!-- WhatsApp / Contato -->
           <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-1.5">
-              WhatsApp para contato <span class="text-red-400">*</span>
+            <label for="field-phone" class="block text-sm font-semibold text-slate-300 mb-1.5">
+              WhatsApp para contato <span class="text-red-400" aria-hidden="true">*</span>
             </label>
             <input
               type="tel"
+              id="field-phone"
               x-model="fields.phone"
               @blur="touch('phone')"
               :class="{ 'form-input-error': errors.phone && touched.phone }"
+              :aria-invalid="errors.phone && touched.phone ? 'true' : 'false'"
+              aria-required="true"
+              aria-describedby="field-phone-error"
               class="form-input w-full px-4 py-3 rounded-xl text-sm"
               placeholder="(11) 99999-9999"
               maxlength="15"
               @input="maskPhone($event)"
             />
-            <p x-show="errors.phone && touched.phone" x-text="errors.phone" class="mt-1.5 text-xs text-red-400"></p>
+            <p id="field-phone-error" x-show="errors.phone && touched.phone" x-text="errors.phone" class="mt-1.5 text-xs text-red-400" role="alert"></p>
           </div>
 
           <!-- Submit Button -->
