@@ -20,6 +20,14 @@
   <meta name="twitter:description" content="Pipeline ETL dedicado que integra PDV, iFood e adquirentes. Elimine furos de caixa e recupere horas perdidas em conciliação manual." />
   <meta name="twitter:image"      content="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80" />
 
+  <!-- SEO: Canonical & Indexing -->
+  <link rel="canonical" href="https://dataflowfinance.com.br" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+  <!-- Performance: DNS prefetch for external image host -->
+  <link rel="dns-prefetch" href="https://images.unsplash.com" />
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -454,6 +462,66 @@
     .footer-link { color: #64748b; transition: color 0.15s ease; font-size: 13px; }
     .footer-link:hover { color: #cbd5e1; }
   </style>
+
+  <!-- JSON-LD Structured Data — Organization + Service (schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://dataflowfinance.com.br/#organization",
+        "name": "DataFlow Finance",
+        "url": "https://dataflowfinance.com.br",
+        "description": "Infraestrutura ETL dedicada que integra PDV, iFood e adquirentes em um único pipeline automatizado para restaurantes e redes de food service.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Belo Horizonte",
+          "addressRegion": "MG",
+          "addressCountry": "BR"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "availableLanguage": "Portuguese",
+          "url": "https://wa.me/5531999999999"
+        }
+      },
+      {
+        "@type": "Service",
+        "@id": "https://dataflowfinance.com.br/#service",
+        "name": "Pipeline ETL Financeiro para Restaurantes",
+        "serviceType": "Automação Financeira",
+        "description": "Motor ETL em Python que extrai dados de PDV, iFood e adquirentes, detecta furos de caixa e entrega um DRE consolidado e auditável atualizado a cada 24 horas.",
+        "provider": { "@id": "https://dataflowfinance.com.br/#organization" },
+        "areaServed": { "@type": "Country", "name": "Brasil" },
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Starter",
+            "description": "Pipeline ETL para restaurante único com até 2 canais de integração e DRE mensal",
+            "price": "3500",
+            "priceCurrency": "BRL"
+          },
+          {
+            "@type": "Offer",
+            "name": "Professional",
+            "description": "Pipeline ETL para até 3 unidades com canais ilimitados, dashboard executivo e alertas WhatsApp",
+            "price": "7500",
+            "priceCurrency": "BRL"
+          },
+          {
+            "@type": "Offer",
+            "name": "Enterprise",
+            "description": "Pipeline ETL para redes e franquias com data warehouse customizado, SLA 99.9% e SRE dedicado",
+            "price": "15000",
+            "priceCurrency": "BRL"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body x-data="auditForm()" class="antialiased">
