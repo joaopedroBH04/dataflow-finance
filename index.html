@@ -130,6 +130,23 @@
       height: 2px;
       background: linear-gradient(90deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.9));
       position: relative;
+      overflow: visible;
+    }
+
+    .connector-arrow::before {
+      content: '';
+      position: absolute;
+      top: 50%; margin-top: -4px;
+      left: 0; width: 8px; height: 8px; border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px rgba(16,185,129,0.9);
+      animation: dotFlow 2s linear infinite;
+    }
+    @keyframes dotFlow {
+      0%   { left: 0%;    opacity: 0; }
+      8%   { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { left: calc(100% - 8px); opacity: 0; }
     }
 
     .connector-arrow::after {
@@ -140,6 +157,24 @@
       border-left: 8px solid rgba(16, 185, 129, 0.9);
       border-top: 5px solid transparent;
       border-bottom: 5px solid transparent;
+    }
+
+    .connector-arrow { animation-delay: var(--dot-delay, 0s); }
+    .connector-arrow::before { animation-delay: var(--dot-delay, 0s); }
+
+    .connector-vertical::before {
+      content: '';
+      position: absolute;
+      left: 50%; margin-left: -4px;
+      top: 0; width: 8px; height: 8px; border-radius: 50%;
+      background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.9);
+      animation: dotFlowV 2s linear infinite;
+    }
+    @keyframes dotFlowV {
+      0%   { top: 0%;    opacity: 0; }
+      8%   { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { top: calc(100% - 8px); opacity: 0; }
     }
 
     /* --- Grid background pattern --- */
@@ -1268,7 +1303,7 @@
 
           <!-- Connector 2 -->
           <div class="flex flex-col items-center justify-center gap-1 px-2">
-            <div class="connector-arrow" style="width:64px;"></div>
+            <div class="connector-arrow" style="width:64px; --dot-delay:1s;"></div>
           </div>
 
           <!-- LAYER 3: Outputs -->
@@ -2650,7 +2685,7 @@
         <div class="inline-flex items-center justify-center mb-6">
           <div class="urgency-strip">
             <span class="urgency-dot"></span>
-            Apenas <strong id="vagas-count" class="mx-1 text-white">3</strong> vagas disponíveis este mês
+            Apenas <strong id="vagas-count" class="mx-1 text-white">3</strong> vagas disponíveis · encerram em <strong id="urgency-countdown" class="ml-1 text-white font-mono">--:--:--</strong>
           </div>
         </div>
 
@@ -3784,6 +3819,61 @@
       const dia   = new Date().getDate();
       const vagas = Math.max(1, 5 - Math.floor(dia / 7));
       el.textContent = vagas;
+    })();
+
+    // ==================================================================
+    // URGENCY COUNTDOWN — conta até meia-noite do último dia do mês
+    // ==================================================================
+    (function () {
+      const el = document.getElementById('urgency-countdown');
+      if (!el) return;
+      function tick() {
+        const now = new Date();
+        const end = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0);
+        const diff = Math.max(0, end - now);
+        const h  = Math.floor(diff / 3600000);
+        const m  = Math.floor((diff % 3600000) / 60000);
+        const s  = Math.floor((diff % 60000) / 1000);
+        el.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    // ==================================================================
+    // KEYBOARD SHORTCUT — Alt+A → foca no formulário de auditoria
+    // ==================================================================
+    (function () {
+      document.addEventListener('keydown', e => {
+        if (e.altKey && e.key.toLowerCase() === 'a') {
+          e.preventDefault();
+          const section = document.getElementById('auditoria');
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const firstInput = section.querySelector('input, select');
+            if (firstInput) setTimeout(() => firstInput.focus(), 600);
+          }
+        }
+      });
+    })();
+
+    // ==================================================================
+    // STAT CARD HOVER TOOLTIPS — mostra contexto extra nos números
+    // ==================================================================
+    (function () {
+      const tips = [
+        { sel: '[data-count="40"]', msg: 'Média de 27 restaurantes auditados pela DataFlow' },
+        { sel: '[data-count="23"]', msg: 'Fonte: análise de 3.200 pedidos iFood reconciliados' },
+        { sel: '[data-count="24"]', msg: 'Pipeline roda automaticamente a cada 24 horas' },
+      ];
+      tips.forEach(({ sel, msg }) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        const card = el.closest('.stat-card');
+        if (!card) return;
+        card.setAttribute('title', msg);
+        card.style.cursor = 'help';
+      });
     })();
   </script>
 
