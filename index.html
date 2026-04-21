@@ -591,6 +591,72 @@
       border-radius: 6px; padding: 2px 8px;
       font-size: 10px; font-weight: 700; color: #34d399; letter-spacing: 0.5px;
     }
+
+    /* --- Mouse spotlight --- */
+    #cursor-spotlight {
+      position: fixed; pointer-events: none; z-index: 0;
+      width: 520px; height: 520px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 65%);
+      transform: translate(-50%, -50%);
+      will-change: left, top; opacity: 0; transition: opacity 0.4s;
+    }
+    body:hover #cursor-spotlight { opacity: 1; }
+
+    /* --- Live viewers badge --- */
+    .live-viewers {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.22);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: 12px; font-weight: 600; color: #34d399;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #10b981;
+      flex-shrink: 0; box-shadow: 0 0 0 0 rgba(16,185,129,0.6);
+      animation: livePulse 2s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
+      60% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+    }
+
+    /* --- ROI sticky share badge --- */
+    #roi-badge {
+      position: fixed; bottom: 96px; right: 20px; z-index: 8999;
+      background: rgba(10,15,30,0.97); border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 18px; padding: 14px 18px; backdrop-filter: blur(14px);
+      transform: translateX(160%); transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+      max-width: 230px; box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    }
+    #roi-badge.show { transform: translateX(0); }
+    #roi-badge-close {
+      position: absolute; top: 8px; right: 10px;
+      background: none; border: none; color: #64748b; font-size: 14px; cursor: pointer;
+      line-height: 1; padding: 2px 4px;
+    }
+    #roi-badge-close:hover { color: #f1f5f9; }
+
+    /* --- Animated pipeline flow dots --- */
+    .pipeline-flow-dot {
+      position: absolute; width: 8px; height: 8px; border-radius: 50%;
+      background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.8);
+      animation: flowDot 3s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes flowDot {
+      0%   { left: 0%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { left: 100%; opacity: 0; }
+    }
+
+    /* --- Glitch number effect --- */
+    @keyframes glitch {
+      0%,100% { transform: none; }
+      20% { transform: skewX(-2deg) translateX(-2px); }
+      40% { transform: skewX(2deg)  translateX(2px); }
+      60% { transform: translateX(-1px); }
+    }
+    .glitch-once { animation: glitch 0.35s ease; }
   </style>
 
   <!-- JSON-LD Structured Data — Organization + Service (schema.org) -->
@@ -655,6 +721,20 @@
 </head>
 
 <body x-data="auditForm()" class="antialiased">
+
+  <!-- Mouse spotlight -->
+  <div id="cursor-spotlight" aria-hidden="true"></div>
+
+  <!-- ROI sticky share badge -->
+  <div id="roi-badge" aria-live="polite" aria-label="Resumo do seu ROI calculado">
+    <button id="roi-badge-close" onclick="document.getElementById('roi-badge').classList.remove('show')" aria-label="Fechar">✕</button>
+    <p class="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wide">Seu ROI estimado</p>
+    <p id="roi-badge-val" class="text-2xl font-black gradient-text mb-1">R$ —</p>
+    <p class="text-xs text-slate-500 mb-3">recuperados por ano com pipeline dedicado</p>
+    <a href="#auditoria" onclick="document.getElementById('roi-badge').classList.remove('show')" class="block text-center text-xs font-bold py-2 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-navy-950 transition-colors">
+      Validar com auditoria gratuita →
+    </a>
+  </div>
 
   <!-- Skip to main content (keyboard / screen-reader nav) -->
   <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-navy-950 focus:font-bold focus:rounded-lg focus:shadow-lg focus:outline-none">Pular para o conteúdo principal</a>
@@ -872,6 +952,14 @@
         <p class="text-base text-slate-500 max-w-2xl mx-auto mb-10">
           Construímos um motor ETL em Python rodando na nuvem que elimina esse caos operacional e entrega um DRE automático e auditável, integrado a todas as suas fontes de dados.
         </p>
+
+        <!-- Live viewers -->
+        <div class="flex justify-center mb-6">
+          <div class="live-viewers">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span id="live-count">127</span>&nbsp;restaurantes analisando agora
+          </div>
+        </div>
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -3595,6 +3683,96 @@
       }
       window.addEventListener('scroll', update, { passive: true });
       update();
+    })();
+
+    // ==================================================================
+    // MOUSE SPOTLIGHT
+    // ==================================================================
+    (function () {
+      const el = document.getElementById('cursor-spotlight');
+      if (!el || window.matchMedia('(pointer: coarse)').matches) return;
+      document.addEventListener('mousemove', e => {
+        el.style.left = e.clientX + 'px';
+        el.style.top  = e.clientY + 'px';
+      }, { passive: true });
+    })();
+
+    // ==================================================================
+    // LIVE VIEWERS COUNTER
+    // ==================================================================
+    (function () {
+      const el = document.getElementById('live-count');
+      if (!el) return;
+      let count = Math.floor(Math.random() * 40) + 110;
+      el.textContent = count;
+      setInterval(() => {
+        const delta = Math.random() < 0.5 ? 1 : -1;
+        const noise = Math.floor(Math.random() * 3);
+        count = Math.max(95, Math.min(185, count + delta * noise));
+        el.textContent = count;
+      }, 4800);
+    })();
+
+    // ==================================================================
+    // ROI STICKY BADGE — aparece após interagir com os sliders
+    // ==================================================================
+    (function () {
+      const badge    = document.getElementById('roi-badge');
+      const badgeVal = document.getElementById('roi-badge-val');
+      if (!badge || !badgeVal) return;
+      let shown = false;
+      document.querySelectorAll('.roi-slider').forEach(slider => {
+        slider.addEventListener('input', () => {
+          if (shown) return;
+          shown = true;
+          setTimeout(() => {
+            const annualEl = document.querySelector('[x-text="formatBRL(annualSavings)"]');
+            if (annualEl) badgeVal.textContent = annualEl.textContent;
+            badge.classList.add('show');
+          }, 1200);
+        });
+        slider.addEventListener('change', () => {
+          const annualEl = document.querySelector('[x-text="formatBRL(annualSavings)"]');
+          if (annualEl && shown) badgeVal.textContent = annualEl.textContent;
+        });
+      });
+    })();
+
+    // ==================================================================
+    // TAB TITLE PROGRESS — mostra % lido na aba enquanto scrolla
+    // ==================================================================
+    (function () {
+      const base = 'DataFlow Finance';
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const pct = Math.round(
+            (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
+          );
+          document.title = pct > 2 ? base + ' · ' + pct + '% lido' : base + ' | Automação Financeira';
+          ticking = false;
+        });
+      }, { passive: true });
+    })();
+
+    // ==================================================================
+    // GLITCH EFFECT on hero stats when ticker updates
+    // ==================================================================
+    (function () {
+      const ticker = document.getElementById('loss-ticker');
+      if (!ticker) return;
+      let last = '';
+      const obs = new MutationObserver(() => {
+        if (ticker.textContent !== last) {
+          last = ticker.textContent;
+          ticker.classList.remove('glitch-once');
+          void ticker.offsetWidth;
+          ticker.classList.add('glitch-once');
+        }
+      });
+      obs.observe(ticker, { childList: true, subtree: true, characterData: true });
     })();
 
     // ==================================================================
