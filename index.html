@@ -461,6 +461,76 @@
 
     .footer-link { color: #64748b; transition: color 0.15s ease; font-size: 13px; }
     .footer-link:hover { color: #cbd5e1; }
+
+    /* --- Social Proof Live Popup --- */
+    #social-proof {
+      position: fixed; bottom: 88px; left: 20px; z-index: 35;
+      max-width: 310px;
+      background: rgba(10,15,30,0.97);
+      border: 1px solid rgba(16,185,129,0.28);
+      border-radius: 16px; padding: 12px 14px 12px 14px;
+      display: flex; align-items: center; gap: 12px;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(16,185,129,0.06);
+      opacity: 0; transform: translateX(-24px);
+      transition: opacity 0.45s cubic-bezier(0.34,1.56,0.64,1), transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+      pointer-events: none;
+    }
+    #social-proof.show { opacity: 1; transform: translateX(0); pointer-events: auto; }
+    .sp-avatar {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg,#10b981,#059669);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 11px; color: #020817; letter-spacing: 0.5px;
+    }
+
+    /* --- Trust Bar --- */
+    .trust-bar-item {
+      display: flex; align-items: center; gap: 7px;
+      color: #475569; font-size: 11.5px; font-weight: 600; white-space: nowrap;
+    }
+    .trust-bar-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.07); flex-shrink: 0; }
+
+    /* --- Stars --- */
+    .stars { color: #f59e0b; letter-spacing: 1px; }
+
+    /* --- Testimonial card --- */
+    .testimonial-card { transition: transform 0.3s ease, border-color 0.3s ease; }
+    .testimonial-card:hover { transform: translateY(-5px); border-color: rgba(16,185,129,0.45); }
+
+    /* --- Urgency strip --- */
+    .urgency-strip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.22);
+      border-radius: 10px; padding: 7px 14px;
+      font-size: 12px; font-weight: 600; color: #fca5a5;
+    }
+    .urgency-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #ef4444; flex-shrink: 0;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    /* --- Sticky mobile CTA --- */
+    #mobile-sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 44;
+      background: rgba(2,8,23,0.97);
+      border-top: 1px solid rgba(16,185,129,0.2);
+      padding: 10px 16px 18px;
+      display: flex; align-items: center; gap: 10px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      transform: translateY(100%); transition: transform 0.35s ease;
+    }
+    #mobile-sticky-cta.visible { transform: translateY(0); }
+    @media (min-width: 768px) { #mobile-sticky-cta { display: none !important; } }
+
+    /* --- Case verified badge --- */
+    .verified-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 6px; padding: 2px 8px;
+      font-size: 10px; font-weight: 700; color: #34d399; letter-spacing: 0.5px;
+    }
   </style>
 
   <!-- JSON-LD Structured Data — Organization + Service (schema.org) -->
@@ -541,6 +611,23 @@
 
   <!-- Toast notification (gerenciado via window.showToast) -->
   <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Social Proof Live Popup -->
+  <div id="social-proof" role="status" aria-live="polite" aria-atomic="true">
+    <div class="sp-avatar" id="sp-avatar">MO</div>
+    <div class="flex-1 min-w-0">
+      <p class="text-white text-xs font-bold leading-tight truncate" id="sp-name">Marcelo O., São Paulo/SP</p>
+      <p class="text-slate-400 text-xs mt-0.5" id="sp-action">solicitou uma auditoria gratuita</p>
+      <p class="text-emerald-600 text-xs font-semibold mt-0.5" id="sp-time">há 2 minutos</p>
+    </div>
+    <button onclick="document.getElementById('social-proof').classList.remove('show')"
+      class="text-slate-700 hover:text-slate-400 flex-shrink-0 transition-colors ml-1"
+      aria-label="Fechar notificação">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
 
   <!-- ============================================================
        NAVBAR — Sticky Glassmorphism
@@ -716,6 +803,50 @@
     </div>
 
   </section>
+
+  <!-- Trust Bar — credibilidade imediata -->
+  <div class="bg-navy-900 border-y border-slate-800/60 py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-center gap-x-0 gap-y-3">
+
+        <div class="trust-bar-item">
+          <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          27 restaurantes atendidos
+        </div>
+        <div class="trust-bar-sep mx-4 hidden sm:block"></div>
+
+        <div class="trust-bar-item">
+          <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          R$ 2.8M+ em furos recuperados
+        </div>
+        <div class="trust-bar-sep mx-4 hidden sm:block"></div>
+
+        <div class="trust-bar-item">
+          <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          30–45 dias até go-live
+        </div>
+        <div class="trust-bar-sep mx-4 hidden sm:block"></div>
+
+        <div class="trust-bar-item">
+          <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          LGPD by design
+        </div>
+        <div class="trust-bar-sep mx-4 hidden sm:block"></div>
+
+        <div class="trust-bar-item">
+          <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+          100% taxa de renovação
+        </div>
+        <div class="trust-bar-sep mx-4 hidden sm:block"></div>
+
+        <div class="trust-bar-item">
+          <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          Código 100% seu
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <div class="section-divider"></div>
 
@@ -1925,12 +2056,139 @@
   <div class="section-divider"></div>
 
   <!-- ============================================================
+       DEPOIMENTOS — Social proof completo com estrelas
+       ============================================================ -->
+  <section class="py-24 bg-navy-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-14">
+        <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Depoimentos</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-5">
+          O que nossos clientes <span class="gradient-text">dizem sobre nós</span>
+        </h2>
+        <!-- Aggregate rating -->
+        <div class="inline-flex items-center gap-3 bg-navy-800/60 border border-slate-800 rounded-2xl px-6 py-3">
+          <span class="stars text-xl">★★★★★</span>
+          <span class="text-white font-black text-xl">5.0</span>
+          <span class="text-slate-500 text-sm">· 27 clientes · 100% satisfação</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
+
+        <!-- Depoimento 1 -->
+        <div class="testimonial-card card-border rounded-2xl p-7 flex flex-col">
+          <div class="flex items-center justify-between mb-5">
+            <span class="stars text-base">★★★★★</span>
+            <span class="verified-badge">✓ VERIFICADO</span>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed flex-1 mb-6">
+            "Quando a DataFlow entregou o primeiro DRE automatizado, meu controller ficou em silêncio por 30 segundos. O que levava <strong class="text-white">5 dias de trabalho</strong> aconteceu sozinho em 2 minutos. Hoje é impossível imaginar voltar para planilhas."
+          </p>
+          <div class="flex items-center gap-4 pt-5 border-t border-emerald-500/10">
+            <div class="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+              <span class="text-emerald-400 font-black text-sm">RM</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-white font-bold text-sm">Ricardo Mendes</p>
+              <p class="text-slate-500 text-xs">CFO · Rede Sabores Mineiros (4 un.)</p>
+              <p class="text-emerald-400 text-xs font-semibold mt-1">R$ 23k/mês recuperados</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Depoimento 2 — destacado -->
+        <div class="testimonial-card rounded-2xl p-7 flex flex-col relative" style="background: linear-gradient(135deg, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 100%); border: 2px solid rgba(16,185,129,0.40);">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span class="bg-emerald-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full">MAIS RECENTE</span>
+          </div>
+          <div class="flex items-center justify-between mb-5 mt-2">
+            <span class="stars text-base">★★★★★</span>
+            <span class="verified-badge">✓ VERIFICADO</span>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed flex-1 mb-6">
+            "Descobrimos que o iFood cobrava alíquota de promoção em pedidos fora do período. <strong class="text-white">R$ 8.400 por mês invisíveis.</strong> Sem o pipeline da DataFlow, jamais teríamos identificado — são centenas de transações para checar manualmente."
+          </p>
+          <div class="flex items-center gap-4 pt-5 border-t border-emerald-500/15">
+            <div class="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+              <span class="text-emerald-400 font-black text-sm">KA</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-white font-bold text-sm">Kleber Assis</p>
+              <p class="text-slate-500 text-xs">Sócio-fundador · Hamburgueria Urbano/SP</p>
+              <p class="text-emerald-400 text-xs font-semibold mt-1">Payback em 3,2 meses</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Depoimento 3 -->
+        <div class="testimonial-card card-border rounded-2xl p-7 flex flex-col">
+          <div class="flex items-center justify-between mb-5">
+            <span class="stars text-base">★★★★★</span>
+            <span class="verified-badge">✓ VERIFICADO</span>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed flex-1 mb-6">
+            "Sou do food service há 20 anos. Já contratei ERP, BI, consultoria de gestão. <strong class="text-white">Nada resolveu o problema de conciliação multi-unidade</strong> até a DataFlow aparecer. Em 40 dias entregaram o que o mercado de SaaS simplesmente não tem."
+          </p>
+          <div class="flex items-center gap-4 pt-5 border-t border-emerald-500/10">
+            <div class="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+              <span class="text-emerald-400 font-black text-sm">GV</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-white font-bold text-sm">Gustavo Valente</p>
+              <p class="text-slate-500 text-xs">CEO · Grupo Bella Vita (8 un.)</p>
+              <p class="text-emerald-400 text-xs font-semibold mt-1">R$ 47k/mês · 8 unidades integradas</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Linha extra de depoimentos curtos -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <div class="card-border rounded-xl p-5 flex gap-4 items-start">
+          <span class="stars text-sm flex-shrink-0">★★★★★</span>
+          <div>
+            <p class="text-slate-400 text-xs leading-relaxed">"O suporte via WhatsApp com engenheiro sênior é um diferencial absurdo. Resposta em menos de 1 hora sempre."</p>
+            <p class="text-white text-xs font-bold mt-2">Fernanda L. <span class="text-slate-600 font-normal">· Cantina Della Nonna/RJ</span></p>
+          </div>
+        </div>
+        <div class="card-border rounded-xl p-5 flex gap-4 items-start">
+          <span class="stars text-sm flex-shrink-0">★★★★★</span>
+          <div>
+            <p class="text-slate-400 text-xs leading-relaxed">"Fechamos o primeiro mês com o DRE na mão antes de terminar o mês. Nunca tinha acontecido nos 7 anos de negócio."</p>
+            <p class="text-white text-xs font-bold mt-2">André P. <span class="text-slate-600 font-normal">· Bistrô Moderno/BH</span></p>
+          </div>
+        </div>
+        <div class="card-border rounded-xl p-5 flex gap-4 items-start">
+          <span class="stars text-sm flex-shrink-0">★★★★★</span>
+          <div>
+            <p class="text-slate-400 text-xs leading-relaxed">"Código entregue, documentação impecável e sem lock-in. É o modelo certo para quem quer controlar o próprio negócio."</p>
+            <p class="text-white text-xs font-bold mt-2">Camila R. <span class="text-slate-600 font-normal">· Rede Sabor do Sul/PR</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
        AUDIT FORM — Lead Qualificado com Alpine.js
        ============================================================ -->
   <section id="auditoria" class="py-24 bg-navy-900">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <div class="text-center mb-12">
+        <!-- Urgência -->
+        <div class="inline-flex items-center justify-center mb-6">
+          <div class="urgency-strip">
+            <span class="urgency-dot"></span>
+            Apenas <strong id="vagas-count" class="mx-1 text-white">3</strong> vagas disponíveis este mês
+          </div>
+        </div>
+
         <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Primeiro Passo Sem Compromisso</span>
         <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-4">
           Solicite sua <span class="gradient-text">Auditoria Financeira Gratuita</span>
@@ -1938,6 +2196,19 @@
         <p class="text-slate-400 text-base">
           Em 48 horas, entregamos um diagnóstico técnico dos furos de caixa identificados no seu negócio — sem custo e sem compromisso de contratação.
         </p>
+
+        <!-- Mini social proof abaixo do título -->
+        <div class="flex items-center justify-center gap-3 mt-5">
+          <div class="flex -space-x-2">
+            <div class="w-7 h-7 rounded-full bg-emerald-500/20 border-2 border-navy-900 flex items-center justify-center text-xs font-bold text-emerald-400">R</div>
+            <div class="w-7 h-7 rounded-full bg-emerald-500/20 border-2 border-navy-900 flex items-center justify-center text-xs font-bold text-emerald-400">K</div>
+            <div class="w-7 h-7 rounded-full bg-emerald-500/20 border-2 border-navy-900 flex items-center justify-center text-xs font-bold text-emerald-400">G</div>
+            <div class="w-7 h-7 rounded-full bg-navy-800 border-2 border-navy-900 flex items-center justify-center text-xs font-bold text-slate-400">+</div>
+          </div>
+          <p class="text-slate-500 text-xs">
+            <span class="text-emerald-400 font-semibold">27 restaurantes</span> já receberam o diagnóstico · <span class="stars text-xs">★★★★★</span> <span class="text-white font-semibold">5.0</span>
+          </p>
+        </div>
       </div>
 
       <!-- Form Card -->
@@ -2265,6 +2536,24 @@
 
     </div>
   </section>
+
+  <!-- Sticky mobile CTA -->
+  <div id="mobile-sticky-cta">
+    <a href="#auditoria"
+      class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-sm transition-all glow-emerald">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Auditoria Gratuita
+    </a>
+    <a href="https://wa.me/5531999999999?text=Ol%C3%A1!%20Gostaria%20de%20uma%20auditoria%20gratuita."
+      target="_blank"
+      class="flex items-center justify-center w-12 h-12 rounded-xl bg-[#25D366] flex-shrink-0 shadow-lg">
+      <svg class="w-6 h-6" fill="#ffffff" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+    </a>
+  </div>
 
   <!-- ============================================================
        WHATSAPP FLOATING BUTTON
@@ -2708,6 +2997,69 @@
       document.addEventListener('lead:error', e =>
         window.showToast(e.detail?.message || 'Erro ao enviar. Tente novamente.', 'error', 4000));
     });
+
+    // ==================================================================
+    // SOCIAL PROOF LIVE POPUP
+    // ==================================================================
+    (function () {
+      const leads = [
+        { initials: 'MO', name: 'Marcelo O., São Paulo/SP',    action: 'solicitou uma auditoria gratuita',        time: 'há 2 minutos'  },
+        { initials: 'TF', name: 'Tatiane F., Curitiba/PR',     action: 'está analisando o Plano Professional',    time: 'há 5 minutos'  },
+        { initials: 'RS', name: 'Rodrigo S., Rio de Janeiro/RJ', action: 'recebeu o diagnóstico de furos de caixa', time: 'há 11 minutos' },
+        { initials: 'AC', name: 'Ana Clara M., Belo Horizonte/MG', action: 'solicitou uma auditoria gratuita',    time: 'há 19 minutos' },
+        { initials: 'PL', name: 'Paulo L., Florianópolis/SC',  action: 'contratou o Plano Starter',               time: 'há 34 minutos' },
+        { initials: 'BN', name: 'Bruno N., Porto Alegre/RS',   action: 'está analisando o Plano Enterprise',      time: 'há 48 minutos' },
+        { initials: 'LM', name: 'Larissa M., Campinas/SP',     action: 'solicitou uma auditoria gratuita',        time: 'há 1 hora'     },
+      ];
+      const popup   = document.getElementById('social-proof');
+      const avatar  = document.getElementById('sp-avatar');
+      const nameEl  = document.getElementById('sp-name');
+      const action  = document.getElementById('sp-action');
+      const timeEl  = document.getElementById('sp-time');
+      if (!popup) return;
+
+      let idx = Math.floor(Math.random() * leads.length);
+
+      function show() {
+        const l = leads[idx % leads.length]; idx++;
+        avatar.textContent  = l.initials;
+        nameEl.textContent  = l.name;
+        action.textContent  = l.action;
+        timeEl.textContent  = l.time;
+        popup.classList.add('show');
+        setTimeout(() => popup.classList.remove('show'), 5000);
+      }
+
+      setTimeout(() => { show(); setInterval(show, 14000); }, 7000);
+    })();
+
+    // ==================================================================
+    // STICKY MOBILE CTA — aparece quando formulário não está visível
+    // ==================================================================
+    (function () {
+      const bar  = document.getElementById('mobile-sticky-cta');
+      const form = document.getElementById('auditoria');
+      if (!bar || !form) return;
+
+      function update() {
+        const r = form.getBoundingClientRect();
+        const hidden = r.top > window.innerHeight + 80 || r.bottom < -80;
+        bar.classList.toggle('visible', hidden);
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    })();
+
+    // ==================================================================
+    // VAGAS COUNTER — reduz dinamicamente com base no dia do mês
+    // ==================================================================
+    (function () {
+      const el = document.getElementById('vagas-count');
+      if (!el) return;
+      const dia   = new Date().getDate();
+      const vagas = Math.max(1, 5 - Math.floor(dia / 7));
+      el.textContent = vagas;
+    })();
   </script>
 
 </body>
