@@ -524,6 +524,66 @@
     #mobile-sticky-cta.visible { transform: translateY(0); }
     @media (min-width: 768px) { #mobile-sticky-cta { display: none !important; } }
 
+    /* --- Typewriter cursor --- */
+    .tw-cursor {
+      display: inline-block; color: #10b981; font-weight: 300;
+      animation: twBlink 0.75s step-end infinite; margin-left: 2px;
+    }
+    @keyframes twBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* --- Hero canvas particles --- */
+    #hero-canvas { position:absolute; inset:0; pointer-events:none; z-index:0; }
+    .hero-content-z { position:relative; z-index:1; }
+
+    /* --- Loss ticker --- */
+    .loss-ticker-wrap {
+      background: rgba(239,68,68,0.05);
+      border: 1px solid rgba(239,68,68,0.14);
+      border-radius: 16px; padding: 14px 24px;
+    }
+
+    /* --- 3D tilt --- */
+    .tilt-card { transform-style: preserve-3d; will-change: transform; }
+
+    /* --- Loading screen --- */
+    #loading-screen {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #020817;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s ease;
+    }
+    #loading-screen.fade-out { opacity: 0; pointer-events: none; }
+
+    /* --- Exit intent modal --- */
+    #exit-modal {
+      position: fixed; inset: 0; z-index: 9998;
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #exit-modal.open { opacity: 1; pointer-events: auto; }
+    #exit-modal-backdrop { position:absolute; inset:0; background:rgba(2,8,23,0.88); backdrop-filter:blur(6px); }
+
+    /* --- LGPD banner --- */
+    #lgpd-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9000;
+      background: rgba(10,15,30,0.98); border-top: 1px solid rgba(16,185,129,0.2);
+      padding: 14px 20px; backdrop-filter: blur(16px);
+      transform: translateY(100%); transition: transform 0.4s ease;
+    }
+    #lgpd-banner.show { transform: translateY(0); }
+
+    /* --- Confetti canvas --- */
+    #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:9997; }
+
+    /* --- Dashboard mockup --- */
+    .db-card { background: rgba(13,21,38,0.9); border: 1px solid rgba(16,185,129,0.15); border-radius: 12px; padding: 16px; }
+    .db-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg,#10b981,#34d399); }
+    .db-spark { height: 48px; display: flex; align-items: flex-end; gap: 3px; }
+    .db-spark-bar { flex: 1; background: rgba(16,185,129,0.3); border-radius: 2px 2px 0 0; transition: background 0.2s; }
+    .db-spark-bar.active { background: #10b981; }
+    .db-spark-bar:hover { background: #10b981; }
+
     /* --- Case verified badge --- */
     .verified-badge {
       display: inline-flex; align-items: center; gap: 4px;
@@ -611,6 +671,63 @@
 
   <!-- Toast notification (gerenciado via window.showToast) -->
   <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" aria-hidden="true">
+    <div class="text-center">
+      <div class="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center mx-auto mb-5 glow-emerald">
+        <svg class="w-9 h-9 text-navy-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+      </div>
+      <p class="gradient-text font-black text-2xl tracking-tight mb-1">DataFlow Finance</p>
+      <p class="text-slate-600 text-xs mb-5">Infraestrutura ETL para Restaurantes</p>
+      <div class="w-48 h-1 bg-navy-800 rounded-full mx-auto overflow-hidden">
+        <div id="loading-bar" class="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full" style="width:0;transition:width 0.3s ease;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Exit Intent Modal -->
+  <div id="exit-modal" role="dialog" aria-modal="true" aria-labelledby="exit-modal-title">
+    <div id="exit-modal-backdrop" onclick="closeExitModal()"></div>
+    <div class="relative max-w-md w-full rounded-2xl p-8 text-center" style="background:rgba(10,15,30,0.99);border:1px solid rgba(239,68,68,0.25);box-shadow:0 0 60px rgba(239,68,68,0.1);">
+      <button onclick="closeExitModal()" class="absolute top-4 right-4 text-slate-600 hover:text-slate-300 transition-colors" aria-label="Fechar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <div class="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <p class="text-slate-500 text-xs uppercase tracking-widest font-semibold mb-1">Estimativa para o seu restaurante</p>
+      <p id="exit-modal-title" class="text-red-400 font-black text-4xl font-mono mb-1" id="exit-loss-val">R$ 9.300</p>
+      <p class="text-slate-500 text-xs mb-4">em furos de caixa estimados este mês</p>
+      <p class="text-slate-300 text-sm leading-relaxed mb-6">A auditoria gratuita revela exatamente onde esse dinheiro está escapando — <strong class="text-white">em 48 horas, sem custo e sem compromisso.</strong></p>
+      <a href="#auditoria" onclick="closeExitModal()"
+        class="block w-full px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-black text-base transition-all glow-emerald mb-3">
+        Quero recuperar esse dinheiro
+      </a>
+      <button onclick="closeExitModal()" class="text-slate-600 text-xs hover:text-slate-500 transition-colors">
+        Não, prefiro continuar perdendo dinheiro
+      </button>
+    </div>
+  </div>
+
+  <!-- LGPD Consent Banner -->
+  <div id="lgpd-banner" role="region" aria-label="Aviso de cookies">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div class="flex-1">
+        <p class="text-white text-sm font-semibold mb-0.5">Usamos cookies para melhorar sua experiência</p>
+        <p class="text-slate-500 text-xs leading-relaxed">Dados de navegação são usados exclusivamente para análise interna. Nunca vendemos dados a terceiros. <a href="#faq" class="text-emerald-500 hover:text-emerald-400 underline underline-offset-2">Política LGPD</a></p>
+      </div>
+      <div class="flex gap-2 flex-shrink-0">
+        <button onclick="acceptLGPD()" class="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-sm transition-all">Aceitar</button>
+        <button onclick="declineLGPD()" class="px-4 py-2 rounded-lg border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-slate-300 font-medium text-sm transition-all">Só essenciais</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Social Proof Live Popup -->
   <div id="social-proof" role="status" aria-live="polite" aria-atomic="true">
@@ -721,6 +838,9 @@
        ============================================================ -->
   <section id="main-content" class="relative min-h-screen flex items-center pt-16 grid-pattern overflow-hidden">
 
+    <!-- Animated particle canvas -->
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
     <!-- Background glow orbs -->
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none"></div>
@@ -738,8 +858,8 @@
         <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tight mb-6">
           <span class="text-white">Seu restaurante perde</span><br />
           <span class="gradient-text glow-emerald-text">dinheiro invisível</span><br />
-          <span class="text-white">enquanto você cruza</span>
-          <span class="text-slate-400"> planilhas.</span>
+          <span class="text-white">enquanto você</span>
+          <span class="text-slate-400"> <span id="tw-text">cruza planilhas.</span><span class="tw-cursor" aria-hidden="true">|</span></span>
         </h1>
 
         <!-- Subheadline (AGITATION) -->
@@ -789,6 +909,19 @@
             <p class="text-3xl font-black gradient-text"><span data-count="24" data-suffix="h">24h</span></p>
             <p class="text-xs text-slate-500 mt-1 font-medium">Ciclo de atualização automática do DRE consolidado</p>
           </div>
+        </div>
+
+        <!-- Real-time loss ticker -->
+        <div class="mt-10 max-w-xl mx-auto loss-ticker-wrap reveal">
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
+            <span class="text-red-400/70 text-xs font-semibold uppercase tracking-widest">Ao vivo · estimativa nacional</span>
+          </div>
+          <p class="text-center text-slate-400 text-sm leading-relaxed">
+            Restaurantes brasileiros perderam
+            <span id="loss-ticker" class="text-red-400 font-black text-xl font-mono tabular-nums">R$&nbsp;0</span>
+            em furos de caixa neste mês
+          </p>
         </div>
 
       </div>
@@ -1205,6 +1338,130 @@
   <div class="section-divider"></div>
 
   <!-- ============================================================
+       ANTES E DEPOIS — Transformação visual
+       ============================================================ -->
+  <section class="py-24 bg-navy-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-16">
+        <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Transformação</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-4">
+          O <span class="text-red-400">antes</span> e o <span class="gradient-text">depois</span> do pipeline
+        </h2>
+        <p class="text-slate-400 max-w-xl mx-auto">A mesma equipe, os mesmos dados — resultado completamente diferente.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 reveal">
+
+        <!-- ANTES -->
+        <div class="card-border-red rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-8">
+            <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            <div>
+              <p class="text-red-400 font-black text-lg">Antes · Hoje</p>
+              <p class="text-slate-600 text-xs">Processo manual e caótico</p>
+            </div>
+          </div>
+
+          <div class="space-y-3 mb-8">
+            <div class="flex items-center gap-3 bg-red-500/5 border border-red-500/10 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">🛵</span>
+              <div class="flex-1 text-xs text-slate-400">iFood → exportar CSV → abrir Excel → PROCV → divergências</div>
+              <span class="text-red-400 text-xs font-bold">✗</span>
+            </div>
+            <div class="flex items-center gap-3 bg-red-500/5 border border-red-500/10 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">🖥️</span>
+              <div class="flex-1 text-xs text-slate-400">PDV → exportar → Excel → fórmulas manuais → erros</div>
+              <span class="text-red-400 text-xs font-bold">✗</span>
+            </div>
+            <div class="flex items-center gap-3 bg-red-500/5 border border-red-500/10 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">💳</span>
+              <div class="flex-1 text-xs text-slate-400">Stone → baixar extrato → Excel → nunca fecha igual</div>
+              <span class="text-red-400 text-xs font-bold">✗</span>
+            </div>
+            <div class="flex items-center gap-3 bg-red-500/5 border border-red-500/10 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">📋</span>
+              <div class="flex-1 text-xs text-slate-400">DRE manual → revisão → correção → reunião → retrabalho</div>
+              <span class="text-red-400 text-xs font-bold">✗</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 pt-6 border-t border-red-500/15">
+            <div class="text-center">
+              <p class="text-red-400 font-black text-2xl">5 dias</p>
+              <p class="text-xs text-slate-600 mt-1">para fechar o mês</p>
+            </div>
+            <div class="text-center">
+              <p class="text-red-400 font-black text-2xl">40h+</p>
+              <p class="text-xs text-slate-600 mt-1">de trabalho manual</p>
+            </div>
+            <div class="text-center">
+              <p class="text-red-400 font-black text-2xl">≠</p>
+              <p class="text-xs text-slate-600 mt-1">números divergem</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEPOIS -->
+        <div class="card-border rounded-2xl p-8 glow-emerald">
+          <div class="flex items-center gap-3 mb-8">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div>
+              <p class="gradient-text font-black text-lg">Depois · DataFlow</p>
+              <p class="text-slate-600 text-xs">Pipeline automático 24/7</p>
+            </div>
+          </div>
+
+          <div class="space-y-3 mb-8">
+            <div class="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">🛵</span>
+              <div class="flex-1 text-xs text-slate-400">iFood → <span class="text-emerald-400 font-semibold">Extractor automático</span> → Pipeline → DRE</div>
+              <span class="text-emerald-400 text-xs font-bold">✓</span>
+            </div>
+            <div class="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">🖥️</span>
+              <div class="flex-1 text-xs text-slate-400">PDV → <span class="text-emerald-400 font-semibold">Validação Pydantic</span> → Pipeline → DRE</div>
+              <span class="text-emerald-400 text-xs font-bold">✓</span>
+            </div>
+            <div class="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">💳</span>
+              <div class="flex-1 text-xs text-slate-400">Stone → <span class="text-emerald-400 font-semibold">Conciliação automática</span> → Pipeline → DRE</div>
+              <span class="text-emerald-400 text-xs font-bold">✓</span>
+            </div>
+            <div class="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-3">
+              <span class="text-xl flex-shrink-0">📊</span>
+              <div class="flex-1 text-xs text-slate-400">DRE consolidado → <span class="text-emerald-400 font-semibold">Alerta WhatsApp</span> → Decisão</div>
+              <span class="text-emerald-400 text-xs font-bold">✓</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 pt-6 border-t border-emerald-500/15">
+            <div class="text-center">
+              <p class="gradient-text font-black text-2xl">2 min</p>
+              <p class="text-xs text-slate-600 mt-1">para fechar o mês</p>
+            </div>
+            <div class="text-center">
+              <p class="gradient-text font-black text-2xl">0h</p>
+              <p class="text-xs text-slate-600 mt-1">de trabalho manual</p>
+            </div>
+            <div class="text-center">
+              <p class="gradient-text font-black text-2xl">✓</p>
+              <p class="text-xs text-slate-600 mt-1">sempre conciliado</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
        QUEM SOMOS — Team & Methodology
        ============================================================ -->
   <section id="quem-somos" class="py-24 bg-navy-950">
@@ -1395,7 +1652,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 reveal">
 
         <!-- Case 1 -->
-        <div class="case-card card-border rounded-2xl">
+        <div class="case-card tilt-card card-border rounded-2xl">
           <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">4 UNIDADES · BH</span>
@@ -1434,7 +1691,7 @@
         </div>
 
         <!-- Case 2 -->
-        <div class="case-card card-border rounded-2xl">
+        <div class="case-card tilt-card card-border rounded-2xl">
           <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">HAMBURGUERIA · SP</span>
@@ -1473,7 +1730,7 @@
         </div>
 
         <!-- Case 3 -->
-        <div class="case-card card-border rounded-2xl">
+        <div class="case-card tilt-card card-border rounded-2xl">
           <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">ENTERPRISE · 8 UNIDADES</span>
@@ -1512,7 +1769,7 @@
         </div>
 
         <!-- Case 4 -->
-        <div class="case-card card-border rounded-2xl">
+        <div class="case-card tilt-card card-border rounded-2xl">
           <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">JAPONESA PREMIUM · 2 UNIDADES</span>
@@ -1842,7 +2099,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 reveal">
 
         <!-- Starter -->
-        <div class="pricing-card card-border rounded-2xl p-8">
+        <div class="pricing-card tilt-card card-border rounded-2xl p-8">
           <div class="mb-5">
             <h3 class="text-white font-bold text-xl mb-1">Starter</h3>
             <p class="text-slate-500 text-sm">Restaurante único, operação enxuta</p>
@@ -1867,7 +2124,7 @@
         </div>
 
         <!-- Professional (featured) -->
-        <div class="pricing-card pricing-featured rounded-2xl p-8 relative glow-emerald">
+        <div class="pricing-card tilt-card pricing-featured rounded-2xl p-8 relative glow-emerald">
           <div class="absolute -top-4 left-1/2 -translate-x-1/2">
             <span class="bg-emerald-500 text-navy-950 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wide">Mais Contratado</span>
           </div>
@@ -1895,7 +2152,7 @@
         </div>
 
         <!-- Enterprise -->
-        <div class="pricing-card card-border rounded-2xl p-8">
+        <div class="pricing-card tilt-card card-border rounded-2xl p-8">
           <div class="mb-5">
             <h3 class="text-white font-bold text-xl mb-1">Enterprise</h3>
             <p class="text-slate-500 text-sm">Redes, franquias, grupos gastronômicos</p>
@@ -2050,6 +2307,126 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       DASHBOARD MOCKUP — Preview executivo
+       ============================================================ -->
+  <section class="py-24 bg-navy-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+        <!-- Left: Text -->
+        <div>
+          <span class="text-emerald-500 text-sm font-semibold uppercase tracking-widest">Dashboard Executivo</span>
+          <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 mb-6 leading-tight">
+            Seus dados financeiros,<br/><span class="gradient-text">em tempo real</span>
+          </h2>
+          <p class="text-slate-400 text-base leading-relaxed mb-8">
+            O painel atualiza automaticamente a cada 24h. DRE consolidado, furos detectados e alertas — tudo acessível de qualquer dispositivo.
+          </p>
+          <div class="space-y-5">
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+              <div><p class="text-white font-semibold text-sm">DRE Consolidado Automático</p><p class="text-slate-500 text-xs mt-0.5">Receita líquida real por canal, unidade e período</p></div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              </div>
+              <div><p class="text-white font-semibold text-sm">Alertas WhatsApp & Telegram</p><p class="text-slate-500 text-xs mt-0.5">Notificação imediata quando um furo ultrapassa o limite configurado</p></div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              </div>
+              <div><p class="text-white font-semibold text-sm">Exportação Excel / CSV / JSON</p><p class="text-slate-500 text-xs mt-0.5">Gerado automaticamente no fechamento de cada ciclo</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Dashboard mockup -->
+        <div class="reveal">
+          <div class="rounded-2xl overflow-hidden" style="background:rgba(10,15,30,0.97);border:1px solid rgba(16,185,129,0.22);box-shadow:0 0 80px rgba(16,185,129,0.07),0 32px 64px rgba(0,0,0,0.5);">
+            <!-- Browser bar -->
+            <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800/80" style="background:rgba(13,21,38,0.95);">
+              <div class="w-2.5 h-2.5 rounded-full bg-red-500/70"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-amber-500/70"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></div>
+              <div class="flex-1 mx-3 bg-navy-950/70 rounded px-3 py-1 text-xs text-slate-600 font-mono">dashboard.dataflowfinance.com.br</div>
+              <span class="flex items-center gap-1.5 text-emerald-400 text-xs font-semibold flex-shrink-0">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>Ao vivo
+              </span>
+            </div>
+            <!-- KPI row -->
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="db-card">
+                  <p class="text-slate-600 text-xs mb-1">Receita Bruta</p>
+                  <p class="text-white font-black text-base">R$ 287.450</p>
+                  <p class="text-emerald-400 text-xs mt-0.5">↑ 12% vs mês ant.</p>
+                </div>
+                <div class="db-card">
+                  <p class="text-slate-600 text-xs mb-1">Receita Líquida</p>
+                  <p class="gradient-text font-black text-base">R$ 231.890</p>
+                  <p class="text-emerald-400 text-xs mt-0.5">Margem 80.7%</p>
+                </div>
+                <div class="db-card">
+                  <p class="text-slate-600 text-xs mb-1">Furos Detectados</p>
+                  <p class="text-amber-400 font-black text-base">R$ 8.230</p>
+                  <p class="text-red-400 text-xs mt-0.5">3 divergências ativas</p>
+                </div>
+                <div class="db-card">
+                  <p class="text-slate-600 text-xs mb-1">Horas Economizadas</p>
+                  <p class="text-emerald-400 font-black text-base">58h</p>
+                  <p class="text-slate-500 text-xs mt-0.5">este mês</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <!-- Spark chart -->
+                <div class="db-card">
+                  <p class="text-slate-600 text-xs mb-3">Receita líquida — 6 meses</p>
+                  <div class="db-spark">
+                    <div class="db-spark-bar" style="height:45%"></div>
+                    <div class="db-spark-bar" style="height:60%"></div>
+                    <div class="db-spark-bar" style="height:52%"></div>
+                    <div class="db-spark-bar" style="height:73%"></div>
+                    <div class="db-spark-bar" style="height:65%"></div>
+                    <div class="db-spark-bar active" style="height:82%"></div>
+                  </div>
+                  <div class="flex justify-between mt-1.5 text-xs text-slate-700">
+                    <span>Nov</span><span class="text-emerald-400 font-semibold">Abr ↑</span>
+                  </div>
+                </div>
+                <!-- Gap list -->
+                <div class="db-card">
+                  <p class="text-slate-600 text-xs mb-3">Furos ativos</p>
+                  <div class="space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-red-400 rounded-full flex-shrink-0"></span><span class="text-slate-400 text-xs">iFood comissão</span></div>
+                      <span class="text-red-400 text-xs font-bold">R$ 2.4k</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0"></span><span class="text-slate-400 text-xs">Stone MDR</span></div>
+                      <span class="text-amber-400 text-xs font-bold">R$ 1.9k</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0"></span><span class="text-slate-400 text-xs">Cancelamento</span></div>
+                      <span class="text-amber-400 text-xs font-bold">R$ 980</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -2992,11 +3369,174 @@
     // FORM EVENTS  —  toast ao submeter / erro
     // ==================================================================
     document.addEventListener('alpine:initialized', () => {
-      document.addEventListener('lead:submitted', () =>
-        window.showToast('✓ Solicitação recebida! Retornaremos em até 48h.', 'success', 4500));
+      document.addEventListener('lead:submitted', () => {
+        window.showToast('✓ Solicitação recebida! Retornaremos em até 48h.', 'success', 4500);
+        window.fireConfetti && window.fireConfetti();
+      });
       document.addEventListener('lead:error', e =>
         window.showToast(e.detail?.message || 'Erro ao enviar. Tente novamente.', 'error', 4000));
     });
+
+    // ==================================================================
+    // LOADING SCREEN
+    // ==================================================================
+    (function () {
+      const screen = document.getElementById('loading-screen');
+      const bar    = document.getElementById('loading-bar');
+      if (!screen) return;
+      let p = 0;
+      const iv = setInterval(() => {
+        p += Math.random() * 28 + 12;
+        if (p >= 100) { p = 100; clearInterval(iv);
+          setTimeout(() => { screen.classList.add('fade-out'); setTimeout(() => screen.remove(), 650); }, 180);
+        }
+        bar.style.width = p + '%';
+      }, 110);
+    })();
+
+    // ==================================================================
+    // TYPEWRITER EFFECT
+    // ==================================================================
+    (function () {
+      const el = document.getElementById('tw-text');
+      if (!el) return;
+      const phrases = ['cruza planilhas.','reconcilia no Excel.','paga por furos invisíveis.','abre extrato da Stone.','exporta relatório do iFood.'];
+      let pi = 0, ci = phrases[0].length, del = true;
+      function tick() {
+        const cur = phrases[pi];
+        if (!del) { el.textContent = cur.slice(0, ++ci); if (ci === cur.length) { del = true; return setTimeout(tick, 2600); } }
+        else       { el.textContent = cur.slice(0, --ci); if (ci === 0) { del = false; pi = (pi + 1) % phrases.length; } }
+        setTimeout(tick, del ? 32 : 82);
+      }
+      setTimeout(tick, 2400);
+    })();
+
+    // ==================================================================
+    // REAL-TIME LOSS TICKER  (R$ ~900M / mês nacional estimado)
+    // ==================================================================
+    (function () {
+      const el = document.getElementById('loss-ticker');
+      if (!el) return;
+      const perTick = 34.7; // por 100 ms
+      const now = new Date();
+      let cur = Math.round(((now - new Date(now.getFullYear(), now.getMonth(), 1)) / 100) * perTick);
+      function fmt(n) { return 'R$\u00a0' + Math.round(n).toLocaleString('pt-BR'); }
+      el.textContent = fmt(cur);
+      setInterval(() => { cur += perTick; el.textContent = fmt(cur); }, 100);
+    })();
+
+    // ==================================================================
+    // HERO PARTICLE CANVAS
+    // ==================================================================
+    (function () {
+      const cv = document.getElementById('hero-canvas');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      function resize() { cv.width = cv.offsetWidth; cv.height = cv.offsetHeight; }
+      resize(); window.addEventListener('resize', resize);
+      const pts = Array.from({length: 55}, () => ({
+        x: Math.random() * cv.width, y: Math.random() * cv.height,
+        r: Math.random() * 1.4 + 0.4,
+        vx: (Math.random() - .5) * .28, vy: (Math.random() - .5) * .28,
+        a: Math.random() * .35 + .08,
+      }));
+      (function draw() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        pts.forEach(p => {
+          p.x = (p.x + p.vx + cv.width)  % cv.width;
+          p.y = (p.y + p.vy + cv.height) % cv.height;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(16,185,129,${p.a})`; ctx.fill();
+        });
+        pts.forEach((a, i) => pts.slice(i + 1).forEach(b => {
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 110) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(16,185,129,${.065 * (1 - d / 110)})`; ctx.lineWidth = .5; ctx.stroke(); }
+        }));
+        requestAnimationFrame(draw);
+      })();
+    })();
+
+    // ==================================================================
+    // 3D TILT ON CARDS
+    // ==================================================================
+    (function () {
+      document.querySelectorAll('.tilt-card').forEach(c => {
+        c.addEventListener('mousemove', e => {
+          const r = c.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width  - .5;
+          const y = (e.clientY - r.top)  / r.height - .5;
+          c.style.transition = 'none';
+          c.style.transform = `perspective(900px) rotateY(${x*12}deg) rotateX(${-y*9}deg) translateZ(8px)`;
+        });
+        c.addEventListener('mouseleave', () => {
+          c.style.transition = 'transform .55s ease';
+          c.style.transform  = 'perspective(900px) rotateY(0) rotateX(0) translateZ(0)';
+        });
+      });
+    })();
+
+    // ==================================================================
+    // EXIT INTENT MODAL
+    // ==================================================================
+    (function () {
+      let shown = sessionStorage.getItem('exit_shown');
+      window.closeExitModal = () => document.getElementById('exit-modal').classList.remove('open');
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') window.closeExitModal(); });
+      document.addEventListener('mouseleave', e => {
+        if (e.clientY > 20 || shown) return;
+        shown = true; sessionStorage.setItem('exit_shown', '1');
+        const rev = 300000;
+        const el  = document.getElementById('exit-loss-val');
+        if (el) el.textContent = 'R$\u00a0' + Math.round(rev * .031).toLocaleString('pt-BR');
+        setTimeout(() => document.getElementById('exit-modal').classList.add('open'), 300);
+      });
+    })();
+
+    // ==================================================================
+    // CONFETTI
+    // ==================================================================
+    (function () {
+      const cv = document.getElementById('confetti-canvas');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+      resize(); window.addEventListener('resize', resize);
+      let pieces = [];
+      const cols = ['#10b981','#34d399','#6ee7b7','#f59e0b','#fbbf24','#ffffff','#a7f3d0'];
+      window.fireConfetti = function () {
+        for (let i = 0; i < 130; i++) pieces.push({
+          x: Math.random() * cv.width, y: -10,
+          w: Math.random() * 9 + 4, h: Math.random() * 13 + 5,
+          col: cols[Math.floor(Math.random() * cols.length)],
+          vy: Math.random() * 4 + 2, vx: (Math.random() - .5) * 3,
+          rot: Math.random() * 360, rv: (Math.random() - .5) * 9, a: 1,
+        });
+        (function anim() {
+          ctx.clearRect(0, 0, cv.width, cv.height);
+          pieces = pieces.filter(p => p.a > .02);
+          pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.rv;
+            if (p.y > cv.height * .75) p.a -= .014;
+            ctx.save(); ctx.globalAlpha = p.a; ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot * Math.PI / 180); ctx.fillStyle = p.col;
+            ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx.restore();
+          });
+          if (pieces.length) requestAnimationFrame(anim);
+          else ctx.clearRect(0, 0, cv.width, cv.height);
+        })();
+      };
+    })();
+
+    // ==================================================================
+    // LGPD CONSENT BANNER
+    // ==================================================================
+    (function () {
+      if (localStorage.getItem('lgpd_ok')) return;
+      setTimeout(() => document.getElementById('lgpd-banner')?.classList.add('show'), 2800);
+      window.acceptLGPD  = () => { localStorage.setItem('lgpd_ok','1'); document.getElementById('lgpd-banner').classList.remove('show'); };
+      window.declineLGPD = () => { localStorage.setItem('lgpd_ok','0'); document.getElementById('lgpd-banner').classList.remove('show'); };
+    })();
 
     // ==================================================================
     // SOCIAL PROOF LIVE POPUP
@@ -3030,7 +3570,14 @@
         setTimeout(() => popup.classList.remove('show'), 5000);
       }
 
-      setTimeout(() => { show(); setInterval(show, 14000); }, 7000);
+      const intervals = [90000, 120000, 75000, 105000, 95000, 130000];
+      let callIdx = 0;
+      function scheduleNext() {
+        const delay = intervals[callIdx % intervals.length]; callIdx++;
+        setTimeout(() => { show(); scheduleNext(); }, delay);
+      }
+      setTimeout(show, 18000);
+      scheduleNext();
     })();
 
     // ==================================================================
