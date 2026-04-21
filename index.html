@@ -704,6 +704,32 @@
       100% { left: 100%; opacity: 0; }
     }
 
+    /* --- Ambient hero orbs animation --- */
+    @keyframes orbFloat1 { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(40px,-30px) scale(1.08);} 66%{transform:translate(-20px,20px) scale(0.95);} }
+    @keyframes orbFloat2 { 0%,100%{transform:translate(0,0) scale(1);} 40%{transform:translate(-35px,25px) scale(1.06);} 80%{transform:translate(20px,-15px) scale(0.97);} }
+    .orb-float-1 { animation: orbFloat1 18s ease-in-out infinite; }
+    .orb-float-2 { animation: orbFloat2 22s ease-in-out infinite; }
+
+    /* --- Sparkline grow animation --- */
+    .db-spark-bar { height: 0 !important; transition: height 0.6s cubic-bezier(.34,1.4,.64,1); }
+    .db-spark-bar.animated { height: var(--bar-h) !important; }
+
+    /* --- WhatsApp help bubble --- */
+    #wa-bubble {
+      position: fixed; bottom: 88px; right: 84px; z-index: 8998;
+      background: #075e54; color: #fff; font-size: 12px; font-weight: 600;
+      padding: 8px 14px; border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      opacity: 0; transform: scale(0.8) translateY(8px);
+      transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none; white-space: nowrap;
+    }
+    #wa-bubble.show { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+    #wa-bubble::after {
+      content: ''; position: absolute; right: -7px; bottom: 0;
+      border-left: 8px solid #075e54; border-top: 6px solid transparent;
+    }
+
     /* --- Glitch number effect --- */
     @keyframes glitch {
       0%,100% { transform: none; }
@@ -779,6 +805,11 @@
 
   <!-- Mouse spotlight -->
   <div id="cursor-spotlight" aria-hidden="true"></div>
+
+  <!-- WhatsApp help bubble -->
+  <a id="wa-bubble" href="https://wa.me/5531999999999?text=Ol%C3%A1!%20Estava%20no%20site%20e%20tenho%20d%C3%BAvidas." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+    Posso te ajudar? 👋
+  </a>
 
   <!-- ROI sticky share badge -->
   <div id="roi-badge" aria-live="polite" aria-label="Resumo do seu ROI calculado">
@@ -980,9 +1011,9 @@
     <!-- Animated particle canvas -->
     <canvas id="hero-canvas" aria-hidden="true"></canvas>
 
-    <!-- Background glow orbs -->
-    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- Background glow orbs (animated float) -->
+    <div class="orb-float-1 absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="orb-float-2 absolute bottom-1/4 right-1/4 w-64 h-64 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
       <div class="text-center max-w-5xl mx-auto">
@@ -2602,13 +2633,13 @@
                 <!-- Spark chart -->
                 <div class="db-card">
                   <p class="text-slate-600 text-xs mb-3">Receita líquida — 6 meses</p>
-                  <div class="db-spark">
-                    <div class="db-spark-bar" style="height:45%"></div>
-                    <div class="db-spark-bar" style="height:60%"></div>
-                    <div class="db-spark-bar" style="height:52%"></div>
-                    <div class="db-spark-bar" style="height:73%"></div>
-                    <div class="db-spark-bar" style="height:65%"></div>
-                    <div class="db-spark-bar active" style="height:82%"></div>
+                  <div class="db-spark" id="db-spark">
+                    <div class="db-spark-bar" style="--bar-h:45%"></div>
+                    <div class="db-spark-bar" style="--bar-h:60%"></div>
+                    <div class="db-spark-bar" style="--bar-h:52%"></div>
+                    <div class="db-spark-bar" style="--bar-h:73%"></div>
+                    <div class="db-spark-bar" style="--bar-h:65%"></div>
+                    <div class="db-spark-bar active" style="--bar-h:82%"></div>
                   </div>
                   <div class="flex justify-between mt-1.5 text-xs text-slate-700">
                     <span>Nov</span><span class="text-emerald-400 font-semibold">Abr ↑</span>
@@ -3806,6 +3837,81 @@
       }
       window.addEventListener('scroll', update, { passive: true });
       update();
+    })();
+
+    // ==================================================================
+    // SPARKLINE GROW ANIMATION — triggered by IntersectionObserver
+    // ==================================================================
+    (function () {
+      const spark = document.getElementById('db-spark');
+      if (!spark) return;
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          spark.querySelectorAll('.db-spark-bar').forEach((bar, i) => {
+            setTimeout(() => bar.classList.add('animated'), i * 90);
+          });
+          obs.disconnect();
+        });
+      }, { threshold: 0.5 });
+      obs.observe(spark);
+    })();
+
+    // ==================================================================
+    // DASHBOARD KPI COUNT-UP ANIMATION
+    // ==================================================================
+    (function () {
+      const targets = [
+        { selector: '.db-card:nth-child(1) .text-white',   end: 287450, prefix: 'R$ ', fmt: true },
+        { selector: '.db-card:nth-child(2) .gradient-text',end: 231890, prefix: 'R$ ', fmt: true },
+        { selector: '.db-card:nth-child(3) .text-amber-400',end: 8230,  prefix: 'R$ ', fmt: true },
+        { selector: '.db-card:nth-child(4) .text-emerald-400', end: 58, prefix: '', suffix: 'h', fmt: false },
+      ];
+      const section = document.querySelector('#db-spark')?.closest('section');
+      if (!section) return;
+      let fired = false;
+      const obs = new IntersectionObserver(entries => {
+        if (!entries[0].isIntersecting || fired) return;
+        fired = true;
+        targets.forEach(({ selector, end, prefix, suffix = '', fmt }) => {
+          const el = section.querySelector(selector);
+          if (!el) return;
+          const duration = 1400;
+          const step = 16;
+          const steps = duration / step;
+          let cur = 0;
+          const timer = setInterval(() => {
+            cur = Math.min(end, cur + end / steps);
+            el.textContent = prefix + (fmt
+              ? Math.round(cur).toLocaleString('pt-BR')
+              : Math.round(cur)) + suffix;
+            if (cur >= end) clearInterval(timer);
+          }, step);
+        });
+        obs.disconnect();
+      }, { threshold: 0.3 });
+      obs.observe(section);
+    })();
+
+    // ==================================================================
+    // WHATSAPP HELP BUBBLE — aparece após 45s se não scrollou ao fundo
+    // ==================================================================
+    (function () {
+      const bubble = document.getElementById('wa-bubble');
+      if (!bubble) return;
+      let dismissed = sessionStorage.getItem('wa_bubble_dismissed');
+      if (dismissed) return;
+      setTimeout(() => {
+        const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        if (pct < 0.85) {
+          bubble.classList.add('show');
+          setTimeout(() => bubble.classList.remove('show'), 12000);
+        }
+      }, 45000);
+      bubble.addEventListener('click', () => {
+        sessionStorage.setItem('wa_bubble_dismissed', '1');
+        bubble.classList.remove('show');
+      });
     })();
 
     // ==================================================================
