@@ -730,6 +730,41 @@
       border-left: 8px solid #075e54; border-top: 6px solid transparent;
     }
 
+    /* --- Section nav dots (desktop only) --- */
+    #section-dots {
+      position: fixed; right: 18px; top: 50%; transform: translateY(-50%);
+      z-index: 8990; display: flex; flex-direction: column; gap: 10px;
+      opacity: 0; transition: opacity 0.4s;
+    }
+    @media (min-width: 1024px) { #section-dots { opacity: 1; } }
+    .section-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(16,185,129,0.2); border: 1.5px solid rgba(16,185,129,0.3);
+      cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
+    }
+    .section-dot:hover { background: rgba(16,185,129,0.5); transform: scale(1.3); }
+    .section-dot.active { background: #10b981; border-color: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.6); transform: scale(1.25); }
+
+    /* --- Form real-time validation checkmarks --- */
+    .field-wrap { position: relative; }
+    .field-check {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #10b981; display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.25s, transform 0.25s;
+      transform: translateY(-50%) scale(0.5);
+      pointer-events: none;
+    }
+    .field-check.show { opacity: 1; transform: translateY(-50%) scale(1); }
+
+    /* --- Visit loss counter badge --- */
+    #visit-loss {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.18);
+      border-radius: 10px; padding: 5px 12px;
+      font-size: 11px; color: #f87171; font-weight: 600;
+    }
+
     /* --- Glitch number effect --- */
     @keyframes glitch {
       0%,100% { transform: none; }
@@ -810,6 +845,19 @@
   <a id="wa-bubble" href="https://wa.me/5531999999999?text=Ol%C3%A1!%20Estava%20no%20site%20e%20tenho%20d%C3%BAvidas." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
     Posso te ajudar? 👋
   </a>
+
+  <!-- Section navigation dots -->
+  <nav id="section-dots" aria-label="Navegação por seções">
+    <button class="section-dot" data-target="main-content" title="Início" aria-label="Ir para Início"></button>
+    <button class="section-dot" data-target="solucao"      title="Solução" aria-label="Ir para Solução"></button>
+    <button class="section-dot" data-target="arquitetura"  title="Arquitetura" aria-label="Ir para Arquitetura"></button>
+    <button class="section-dot" data-target="quem-somos"   title="Quem Somos" aria-label="Ir para Quem Somos"></button>
+    <button class="section-dot" data-target="cases"        title="Cases" aria-label="Ir para Cases"></button>
+    <button class="section-dot" data-target="roi"          title="Calculadora ROI" aria-label="Ir para Calculadora ROI"></button>
+    <button class="section-dot" data-target="planos"       title="Planos" aria-label="Ir para Planos"></button>
+    <button class="section-dot" data-target="auditoria"    title="Auditoria" aria-label="Ir para Auditoria"></button>
+    <button class="section-dot" data-target="faq"          title="FAQ" aria-label="Ir para FAQ"></button>
+  </nav>
 
   <!-- ROI sticky share badge -->
   <div id="roi-badge" aria-live="polite" aria-label="Resumo do seu ROI calculado">
@@ -1040,7 +1088,7 @@
           Furos de caixa invisíveis drenam sua margem enquanto você não vê.
         </p>
         <p class="text-base text-slate-500 max-w-2xl mx-auto mb-10">
-          Construímos um motor ETL em Python rodando na nuvem que elimina esse caos operacional e entrega um DRE automático e auditável, integrado a todas as suas fontes de dados.
+          A DataFlow entrega um pipeline dedicado ao seu negócio em <strong class="text-white">30 a 45 dias</strong> — o código fica com você para sempre, sem mensalidade de software, sem lock-in de plataforma.
         </p>
 
         <!-- Live viewers -->
@@ -1100,6 +1148,12 @@
             <span id="loss-ticker" class="text-red-400 font-black text-xl font-mono tabular-nums">R$&nbsp;0</span>
             em furos de caixa neste mês
           </p>
+          <div class="flex justify-center mt-3">
+            <div id="visit-loss">
+              <span class="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" aria-hidden="true"></span>
+              Nesta visita: <span id="visit-loss-val" class="font-mono tabular-nums">R$ 0</span>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -2719,7 +2773,7 @@
         <!-- Depoimento 2 — destacado -->
         <div class="testimonial-card rounded-2xl p-7 flex flex-col relative" style="background: linear-gradient(135deg, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 100%); border: 2px solid rgba(16,185,129,0.40);">
           <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-            <span class="bg-emerald-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full">MAIS RECENTE</span>
+            <span class="bg-emerald-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full">MAIOR ROI DOCUMENTADO</span>
           </div>
           <div class="flex items-center justify-between mb-5 mt-2">
             <span class="stars text-base">★★★★★</span>
@@ -3123,6 +3177,18 @@
           </summary>
           <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
             Todo plano inclui um <strong class="text-white">período de suporte grátis</strong> (30d Starter, 90d Professional, 12 meses Enterprise). Depois disso, você pode contratar o plano mensal de suporte. Canal direto via WhatsApp Business com engenheiro sênior, SLA de resposta em 4h úteis (1h no Enterprise) e ajustes de regras de negócio inclusos no pacote de horas mensal. Sem chamado no sistema de helpdesk, sem ticket número 48.392.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">R$ 3.500 parece muito. Vale realmente o investimento para o meu restaurante?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">Faça a conta com os seus próprios números:</strong> um restaurante que fatura R$ 80.000/mês perde, em média, R$ 1.200 em furos de caixa não detectados e desperdiça R$ 1.800 em horas de conciliação manual — <strong class="text-emerald-400">R$ 3.000/mês</strong> que saem silenciosamente. Com o Starter a R$ 3.500, o payback acontece em menos de 2 meses. Depois disso, cada real economizado é lucro líquido que fica no seu caixa todos os meses, para sempre. <strong class="text-white">O pipeline é um ativo do seu negócio, não uma despesa recorrente.</strong> Se a auditoria gratuita mostrar que os números do seu caso não justificam o investimento, somos os primeiros a dizer — sem pressão.
           </div>
         </details>
 
@@ -3837,6 +3903,95 @@
       }
       window.addEventListener('scroll', update, { passive: true });
       update();
+    })();
+
+    // ==================================================================
+    // SECTION NAVIGATION DOTS
+    // ==================================================================
+    (function () {
+      const dots = document.querySelectorAll('.section-dot');
+      const sections = Array.from(dots).map(d => document.getElementById(d.dataset.target)).filter(Boolean);
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => sections[i]?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      });
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const idx = sections.indexOf(e.target);
+          if (idx < 0) return;
+          dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        });
+      }, { threshold: 0.35, rootMargin: '-10% 0px -50% 0px' });
+      sections.forEach(s => obs.observe(s));
+    })();
+
+    // ==================================================================
+    // VISIT-BASED LOSS COUNTER
+    // ==================================================================
+    (function () {
+      const el = document.getElementById('visit-loss-val');
+      if (!el) return;
+      const perTick = 34.7;
+      let visitLoss = 0;
+      setInterval(() => {
+        visitLoss += perTick;
+        el.textContent = 'R$\u00a0' + Math.round(visitLoss).toLocaleString('pt-BR');
+      }, 100);
+    })();
+
+    // ==================================================================
+    // TIME-OF-DAY PERSONALIZED GREETING IN HERO BADGE
+    // ==================================================================
+    (function () {
+      const badge = document.querySelector('.inline-flex.items-center.gap-2.px-4.py-2.rounded-full.bg-emerald-500\\/10');
+      if (!badge) return;
+      const h = new Date().getHours();
+      const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+      const span = badge.querySelector('span:last-child');
+      if (span) span.textContent = greeting + ' · ' + span.textContent;
+    })();
+
+    // ==================================================================
+    // LAZY LOADING FOR CASE STUDY IMAGES
+    // ==================================================================
+    (function () {
+      document.querySelectorAll('.case-image[style*="background-image"]').forEach(el => {
+        const url = el.style.backgroundImage.match(/url\(['"]?(.*?)['"]?\)/)?.[1];
+        if (!url) return;
+        el.style.backgroundImage = 'none';
+        el.dataset.bg = url;
+        const obs = new IntersectionObserver(entries => {
+          if (!entries[0].isIntersecting) return;
+          el.style.backgroundImage = 'url(' + url + ')';
+          obs.disconnect();
+        }, { rootMargin: '200px' });
+        obs.observe(el);
+      });
+    })();
+
+    // ==================================================================
+    // FORM REAL-TIME VALIDATION ICONS
+    // ==================================================================
+    (function () {
+      const checks = {
+        'field-name':       v => v.trim().length >= 3,
+        'field-restaurant': v => v.trim().length >= 2,
+        'field-phone':      v => v.replace(/\D/g,'').length >= 10,
+      };
+      Object.entries(checks).forEach(([id, validate]) => {
+        const input = document.getElementById(id);
+        if (!input) return;
+        const wrap = input.parentElement;
+        wrap.classList.add('field-wrap');
+        const icon = document.createElement('span');
+        icon.className = 'field-check';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#020817" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+        wrap.appendChild(icon);
+        input.addEventListener('input', () => {
+          icon.classList.toggle('show', validate(input.value));
+        });
+      });
     })();
 
     // ==================================================================
