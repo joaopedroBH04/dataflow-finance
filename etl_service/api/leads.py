@@ -16,7 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
+from fastapi.security import APIKeyHeader
 from loguru import logger
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -59,6 +60,20 @@ class LeadResponse(BaseModel):
 # ====================================================================== #
 
 router = APIRouter(prefix="/leads", tags=["Leads"])
+
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+async def _require_leads_api_key(api_key: Optional[str] = Security(_api_key_header)) -> None:
+    """Guards read endpoints with an optional API key (disabled when DATAFLOW_LEADS_API_KEY is empty)."""
+    configured = settings.leads_api_key
+    if not configured:
+        return  # Auth disabled — dev/local environment
+    if api_key != configured:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid or missing X-API-Key header.",
+        )
 
 
 def _get_leads_file() -> Path:
@@ -113,13 +128,14 @@ async def create_lead(lead: LeadSubmission) -> LeadResponse:
 @router.get(
     "/",
     response_model=list[dict],
-    summary="List all captured leads (sales team only).",
+    summary="List captured leads — sales team only (requires X-API-Key in production).",
 )
-async def list_leads() -> list[dict]:
-    """
-    Returns every lead captured so far.
-    In production: add auth (API key) and pagination.
-    """
+async def list_leads(
+    skip: int = Query(0, ge=0, description="Number of leads to skip (offset)."),
+    limit: int = Query(100, ge=1, le=1000, description="Maximum leads to return per page."),
+    _: None = Depends(_require_leads_api_key),
+) -> list[dict]:
+    """Returns a paginated slice of leads. Use ?skip=N&limit=M to page through results."""
     leads_file = _get_leads_file()
     if not leads_file.exists():
         return []
@@ -133,4 +149,5 @@ async def list_leads() -> list[dict]:
                     leads.append(json.loads(line))
                 except json.JSONDecodeError:
                     logger.warning("[Leads] Skipping malformed line.")
-    return leads
+
+    return leads[skip : skip + limit]

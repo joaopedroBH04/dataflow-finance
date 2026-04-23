@@ -89,6 +89,17 @@ class Settings(BaseSettings):
         description="Local directory where ETL output files (DRE, gap report) will be saved.",
     )
 
+    # ------------------------------------------------------------------ #
+    # Security
+    # ------------------------------------------------------------------ #
+    leads_api_key: str = Field(
+        default="",
+        description=(
+            "API key required to read GET /leads (protects lead PII). "
+            "Leave empty to disable auth in development. Always set in production."
+        ),
+    )
+
 
 # Singleton instance — import this throughout the codebase.
 settings = Settings()

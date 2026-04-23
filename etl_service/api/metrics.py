@@ -23,6 +23,7 @@ from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
 from pydantic import BaseModel, Field
 
+from etl_service.api import alerts as _alerts_module
 from etl_service.config import settings
 
 
@@ -155,13 +156,14 @@ async def dashboard(trend_months: int = Query(6, ge=1, le=24)) -> DashboardRespo
 
     total_recovered = round(sum(p.gaps_value_brl for p in periods), 2)
     total_hours_saved = round(sum(p.gaps_count for p in periods) * 2.0, 1)
+    alerts_open = sum(1 for a in _alerts_module._ALERTS.values() if not a.acknowledged)
 
     return DashboardResponse(
         latest_period=latest,
         trend_last_n_months=trend,
         total_recovered_brl=total_recovered,
         total_hours_saved=total_hours_saved,
-        alerts_open=0,   # TODO: integrate with alerts.py
+        alerts_open=alerts_open,
     )
 
 
