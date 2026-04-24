@@ -91,10 +91,16 @@
 
     /* --- Gradient text --- */
     .gradient-text {
-      background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+      background: linear-gradient(90deg, #10b981 0%, #34d399 20%, #6ee7b7 45%, #34d399 65%, #10b981 85%, #34d399 100%);
+      background-size: 250% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      animation: gradientShimmer 7s linear infinite;
+    }
+    @keyframes gradientShimmer {
+      0%   { background-position: 0% center; }
+      100% { background-position: 250% center; }
     }
 
     /* --- Glow effects --- */
@@ -110,6 +116,11 @@
     .card-border {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.02) 100%);
       border: 1px solid rgba(16, 185, 129, 0.2);
+      transition: border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .card-border:hover {
+      border-color: rgba(16, 185, 129, 0.38);
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.09), inset 0 1px 0 rgba(16, 185, 129, 0.10);
     }
 
     .card-border-red {
@@ -393,6 +404,11 @@
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.03) 100%);
       border: 2px solid rgba(16, 185, 129, 0.5);
       position: relative;
+      animation: featuredGlow 4s ease-in-out infinite;
+    }
+    @keyframes featuredGlow {
+      0%, 100% { box-shadow: 0 0 30px rgba(16,185,129,0.22), 0 0 60px rgba(16,185,129,0.09); border-color: rgba(16,185,129,0.50); }
+      50%       { box-shadow: 0 0 50px rgba(16,185,129,0.38), 0 0 100px rgba(16,185,129,0.18); border-color: rgba(16,185,129,0.72); }
     }
 
     /* --- FAQ accordion --- */
