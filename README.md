@@ -8,6 +8,7 @@
 [![Pandas](https://img.shields.io/badge/Pandas-2.2-150458)]()
 [![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063)]()
 [![License](https://img.shields.io/badge/License-Proprietary-lightgrey)]()
+[![Changelog](https://img.shields.io/badge/Changelog-CHANGELOG.md-informational)](CHANGELOG.md)
 
 ---
 
@@ -226,6 +227,39 @@ dataflow-finance/
 2. **`ACQUIRER_MISSING_IN_PDV`** — Liquidação no adquirente sem transação correspondente no PDV.
 3. **`AMOUNT_MISMATCH`** — Valores divergem além da tolerância configurada.
 4. **`IFOOD_ORDER_CANCELLED`** — Pedido iFood cancelado que pode estar sendo contabilizado como receita.
+
+---
+
+## Desenvolvimento
+
+### Instalar dependências de desenvolvimento
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+### Executar testes
+
+```bash
+make test
+# ou: pytest tests/ -v --tb=short
+```
+
+### Lint e formatação
+
+```bash
+make lint
+# ou: ruff check . --fix && ruff format .
+```
+
+### Verificação de tipos
+
+```bash
+make type-check
+# ou: mypy etl_service/ --ignore-missing-imports
+```
+
+> Consulte o `Makefile` para a lista completa de atalhos disponíveis.
 
 ---
 
