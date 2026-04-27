@@ -60,9 +60,11 @@ E entrega:
 ### 1. Clonar e instalar dependências
 
 ```bash
-git clone https://github.com/<seu-usuario>/dataflow-finance.git
+git clone https://github.com/joaopedroBH04/dataflow-finance.git
 cd dataflow-finance
 python -m pip install -r requirements.txt
+# For development / testing:
+python -m pip install -r requirements-dev.txt
 ```
 
 ### 2. Configurar variáveis de ambiente
@@ -86,6 +88,8 @@ Acesse:
 ---
 
 ## Uso da API
+
+A documentação interativa completa está disponível em **http://localhost:8000/docs** (Swagger UI).
 
 ### Executar pipeline ETL
 
@@ -121,6 +125,60 @@ curl -X POST http://localhost:8000/api/v1/run-etl \
 
 ---
 
+### Dashboard de Métricas
+
+```bash
+# KPIs consolidados dos últimos 6 meses
+curl http://localhost:8000/api/v1/metrics/dashboard
+
+# Métricas de um mês específico
+curl http://localhost:8000/api/v1/metrics/period/2026-03
+```
+
+---
+
+### Captura de Leads
+
+```bash
+# Registrar lead (chamado pelo formulário da landing page)
+curl -X POST http://localhost:8000/api/v1/leads/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Carlos Silva",
+    "restaurant": "Burger Prime",
+    "revenue": "R$ 100k - R$ 300k/mês",
+    "systems": ["iFood", "Stone"],
+    "phone": "31999990000"
+  }'
+
+# Listar leads — requer X-API-Key se DATAFLOW_LEADS_API_KEY estiver configurado
+curl http://localhost:8000/api/v1/leads/?limit=50 \
+  -H "X-API-Key: $DATAFLOW_LEADS_API_KEY"
+```
+
+---
+
+### Sistema de Alertas / Webhooks
+
+```bash
+# Registrar webhook para receber alertas de furos
+curl -X POST http://localhost:8000/api/v1/alerts/subscribers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "channel": "slack",
+    "webhook_url": "https://hooks.slack.com/services/...",
+    "severity_filter": "medium"
+  }'
+
+# Listar alertas abertos (não reconhecidos)
+curl http://localhost:8000/api/v1/alerts/active
+
+# Reconhecer um alerta
+curl -X POST http://localhost:8000/api/v1/alerts/{alert_id}/ack
+```
+
+---
+
 ## Estrutura do Projeto
 
 ```
@@ -150,14 +208,15 @@ dataflow-finance/
 
 ## Business Rules Implementadas
 
-| Regra                           | Padrão | Configurável via env       |
-|---------------------------------|--------|----------------------------|
-| Comissão iFood                  | 23%    | `DATAFLOW_IFOOD_COMMISSION_RATE` |
-| MDR Cartão de Crédito           | 2.99%  | `DATAFLOW_CREDIT_CARD_FEE` |
-| MDR Cartão de Débito            | 1.49%  | `DATAFLOW_DEBIT_CARD_FEE`  |
-| Taxa PIX                        | 0.99%  | `DATAFLOW_PIX_FEE`         |
-| Taxa Dinheiro                   | 0%     | `DATAFLOW_CASH_FEE`        |
-| Tolerância para Gap Detection   | R$ 0.05| `DATAFLOW_GAP_TOLERANCE_BRL`|
+| Regra                           | Padrão   | Configurável via env              |
+|---------------------------------|----------|-----------------------------------|
+| Comissão iFood                  | 23%      | `DATAFLOW_IFOOD_COMMISSION_RATE`  |
+| MDR Cartão de Crédito           | 2.99%    | `DATAFLOW_CREDIT_CARD_FEE`        |
+| MDR Cartão de Débito            | 1.49%    | `DATAFLOW_DEBIT_CARD_FEE`         |
+| Taxa PIX                        | 0.99%    | `DATAFLOW_PIX_FEE`                |
+| Taxa Dinheiro                   | 0%       | `DATAFLOW_CASH_FEE`               |
+| Tolerância para Gap Detection   | R$ 0.05  | `DATAFLOW_GAP_TOLERANCE_BRL`      |
+| API Key para leitura de leads   | (vazio)  | `DATAFLOW_LEADS_API_KEY`          |
 
 ---
 
@@ -176,10 +235,12 @@ dataflow-finance/
 - [x] Detecção de furos de caixa (4 tipos)
 - [x] API REST com FastAPI
 - [x] Landing page B2B
+- [x] Sistema de alertas via webhook (Telegram, Slack, WhatsApp)
+- [x] Dashboard de métricas KPI (`GET /metrics/dashboard`)
+- [x] Captura de leads com autenticação por API key
 - [ ] Dashboard web (React + Recharts)
 - [ ] Integração Omie / Conta Azul
-- [ ] Alertas em tempo real (webhook Telegram/Slack)
-- [ ] Autenticação multi-tenant (API keys)
+- [ ] Autenticação multi-tenant completa (múltiplos clientes isolados)
 - [ ] Pipeline schedulado (cron / Celery Beat)
 
 ---

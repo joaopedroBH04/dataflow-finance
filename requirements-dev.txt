@@ -1,0 +1,19 @@
+# ================================================================
+# DataFlow Finance ETL — Dev / testing dependencies
+# ================================================================
+# Install with: pip install -r requirements-dev.txt
+# (production requirements are in requirements.txt)
+
+-r requirements.txt
+
+# --- Testing ---
+pytest>=8.0,<9.0
+pytest-asyncio>=0.23,<1.0
+httpx>=0.27,<1.0          # Async TestClient for FastAPI
+
+# --- Code quality ---
+ruff>=0.4,<1.0            # Linting + formatting (replaces flake8/isort/black)
+mypy>=1.10,<2.0           # Static type checking
+
+# --- Types ---
+pandas-stubs>=2.2,<3.0    # mypy stubs for pandas
