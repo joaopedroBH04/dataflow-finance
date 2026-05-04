@@ -90,6 +90,18 @@ class Settings(BaseSettings):
     )
 
     # ------------------------------------------------------------------ #
+    # CORS
+    # ------------------------------------------------------------------ #
+    allowed_origins: list[str] = Field(
+        default=["*"],
+        description=(
+            "List of allowed CORS origins (JSON array format). "
+            "Default '*' is fine for local dev; restrict to specific domains in production. "
+            "Example: [\"https://dataflowfinance.com.br\"]"
+        ),
+    )
+
+    # ------------------------------------------------------------------ #
     # Security
     # ------------------------------------------------------------------ #
     leads_api_key: str = Field(

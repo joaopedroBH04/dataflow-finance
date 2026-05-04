@@ -111,9 +111,10 @@ app = FastAPI(
 )
 
 # Allow requests from the landing page / dashboard frontend.
+# Configure DATAFLOW_ALLOWED_ORIGINS in .env for production.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # Restrict to specific domains in production.
+    allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

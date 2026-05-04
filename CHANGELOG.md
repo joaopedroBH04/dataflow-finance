@@ -15,6 +15,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.0] — 2026-05-04
+
+> Documentação expandida, DevEx e CORS configurável.
+
+### Added
+- `CONTRIBUTING.md` com guia de setup, workflow de desenvolvimento, padrões de commit e calendário de melhorias automáticas
+- Campo `allowed_origins` em `config.py` (pydantic-settings) para configurar origens CORS via variável de ambiente `DATAFLOW_ALLOWED_ORIGINS`
+
+### Changed
+- `main.py`: `CORSMiddleware` agora usa `settings.allowed_origins` em vez de `["*"]` hardcoded — CORS agora é configurável por ambiente sem tocar no código
+- `.env.example`: removida variável fantasma `DATAFLOW_API_KEY` (nunca existiu em `config.py`); `DATAFLOW_ALLOWED_ORIGINS` agora documentada com formato correto (JSON array)
+
+### Fixed
+- Inconsistência entre `.env.example` e `config.py` onde `DATAFLOW_API_KEY` era referenciada mas nunca lida pela aplicação
+
+---
+
 ## [0.4.0] — 2026-04-24 / 2026-04-26
 
 > Documentação expandida, melhoras de design e DevEx.
