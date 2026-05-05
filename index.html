@@ -344,6 +344,10 @@
       transform: scale(1.08);
       box-shadow: 0 6px 28px rgba(37, 211, 102, 0.6), 0 0 60px rgba(37, 211, 102, 0.3);
     }
+    .whatsapp-float:focus-visible {
+      outline: none;
+      box-shadow: 0 6px 28px rgba(37, 211, 102, 0.6), 0 0 0 3px rgba(37, 211, 102, 0.45);
+    }
     @keyframes wppPulse {
       0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4), 0 0 40px rgba(37, 211, 102, 0.2); }
       50%      { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.6), 0 0 60px rgba(37, 211, 102, 0.4); }
@@ -473,7 +477,8 @@
       backdrop-filter: blur(8px);
     }
     #scroll-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    #scroll-top:hover   { border-color: rgba(16, 185, 129, 0.6); background: rgba(16, 185, 129, 0.1); }
+    #scroll-top:hover        { border-color: rgba(16, 185, 129, 0.6); background: rgba(16, 185, 129, 0.1); }
+    #scroll-top:focus-visible { outline: none; border-color: rgba(16, 185, 129, 0.8); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); }
 
     #toast {
       position: fixed;
@@ -935,8 +940,8 @@
       <div class="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
         <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
       </div>
-      <p class="text-slate-500 text-xs uppercase tracking-widest font-semibold mb-1">Estimativa para o seu restaurante</p>
-      <p id="exit-modal-title" class="text-red-400 font-black text-4xl font-mono mb-1" id="exit-loss-val">R$ 9.300</p>
+      <p id="exit-modal-title" class="text-slate-500 text-xs uppercase tracking-widest font-semibold mb-1">Estimativa para o seu restaurante</p>
+      <p id="exit-loss-val" class="text-red-400 font-black text-4xl font-mono mb-1">R$ 9.300</p>
       <p class="text-slate-500 text-xs mb-4">em furos de caixa estimados este mês</p>
       <p class="text-slate-300 text-sm leading-relaxed mb-6">A auditoria gratuita revela exatamente onde esse dinheiro está escapando — <strong class="text-white">em 48 horas, sem custo e sem compromisso.</strong></p>
       <a href="#auditoria" onclick="closeExitModal()"
@@ -1022,7 +1027,7 @@
           </a>
 
           <!-- Hamburger — mobile only -->
-          <button @click="mobileOpen = !mobileOpen" class="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-navy-800/60 transition-all focus:outline-none" :aria-label="mobileOpen ? 'Fechar menu' : 'Abrir menu'">
+          <button @click="mobileOpen = !mobileOpen" class="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-navy-800/60 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus-visible:ring-offset-navy-950" :aria-expanded="mobileOpen ? 'true' : 'false'" :aria-label="mobileOpen ? 'Fechar menu' : 'Abrir menu'" aria-controls="mobile-drawer">
             <svg x-show="!mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -1036,7 +1041,7 @@
     </div>
 
     <!-- Mobile Drawer -->
-    <div x-show="mobileOpen"
+    <div id="mobile-drawer" x-show="mobileOpen" :aria-hidden="mobileOpen ? 'false' : 'true'"
       x-transition:enter="transition ease-out duration-250"
       x-transition:enter-start="opacity-0 -translate-y-3"
       x-transition:enter-end="opacity-100 translate-y-0"
