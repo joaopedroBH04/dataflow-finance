@@ -17,9 +17,9 @@ import glob
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Path as FPath, Query
 from loguru import logger
 from pydantic import BaseModel, Field
 
@@ -176,7 +176,12 @@ async def dashboard(trend_months: int = Query(6, ge=1, le=24)) -> DashboardRespo
     response_model=PeriodMetrics,
     summary="Financial metrics for a specific period (YYYY-MM).",
 )
-async def period_metrics(reference_month: str) -> PeriodMetrics:
+async def period_metrics(
+    reference_month: Annotated[
+        str,
+        FPath(pattern=r"^\d{4}-(0[1-9]|1[0-2])$", description="Period in YYYY-MM format, e.g. '2026-03'."),
+    ],
+) -> PeriodMetrics:
     """Returns the DRE snapshot for the requested month."""
     artefacts = _read_all_dre_artefacts()
     match = next(

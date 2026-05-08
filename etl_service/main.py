@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import AsyncGenerator
 
 import pandas as pd
@@ -144,9 +145,11 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         path=request.url.path,
         exc=str(exc),
     )
+    # Expose raw exception detail only in debug mode to avoid leaking internals.
+    detail = str(exc) if settings.debug else "An unexpected error occurred. Please try again later."
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"status": "error", "detail": str(exc)},
+        content={"status": "error", "detail": detail},
     )
 
 
@@ -158,6 +161,27 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 async def health_check() -> dict:
     """Liveness probe for load balancers and container orchestrators."""
     return {"status": "ok", "service": settings.app_name, "version": settings.api_version}
+
+
+@app.get("/ready", tags=["Infra"])
+async def readiness_check() -> JSONResponse:
+    """Readiness probe — verifies the output directory is writable before accepting traffic."""
+    output_path = Path(settings.output_dir)
+    try:
+        output_path.mkdir(parents=True, exist_ok=True)
+        probe = output_path / ".write_probe"
+        probe.touch()
+        probe.unlink()
+    except OSError as exc:
+        logger.warning("[Ready] Output directory not writable: {exc}", exc=str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "unavailable", "detail": "Output directory not writable."},
+        )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"status": "ready", "service": settings.app_name, "version": settings.api_version},
+    )
 
 
 # ====================================================================== #
