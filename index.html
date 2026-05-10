@@ -24,6 +24,20 @@
   <link rel="canonical" href="https://dataflowfinance.com.br" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
+  <!-- Security: limit referrer leakage to external origins -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- Security: Content Security Policy — restrict resource origins, block framing -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src  'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com;
+    style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src    https://fonts.gstatic.com;
+    img-src     'self' data: https://images.unsplash.com;
+    connect-src 'self' http://localhost:8000 https://api.dataflowfinance.com.br;
+    frame-ancestors 'none';
+  " />
+
   <!-- Performance: DNS prefetch for external image host -->
   <link rel="dns-prefetch" href="https://images.unsplash.com" />
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
@@ -2929,6 +2943,12 @@
         <!-- Form -->
         <form x-show="!submitted" @submit.prevent="handleSubmit()" class="space-y-5" novalidate aria-label="Formulário de solicitação de auditoria gratuita">
 
+          <!-- Honeypot: hidden from real users; bots fill it and get silently rejected -->
+          <div aria-hidden="true" style="position:absolute;opacity:0;top:0;left:0;height:0;width:0;overflow:hidden;pointer-events:none;">
+            <label for="field-website">Website</label>
+            <input type="text" id="field-website" name="website" x-model="fields._hp" tabindex="-1" autocomplete="off" />
+          </div>
+
           <!-- Nome -->
           <div>
             <label for="field-name" class="block text-sm font-semibold text-slate-300 mb-1.5">
@@ -3474,6 +3494,7 @@
         loading: false,
         submitted: false,
         formError: '',
+        _lastSubmitTime: 0,
 
         fields: {
           name: '',
@@ -3481,6 +3502,7 @@
           revenue: '',
           systems: [],
           phone: '',
+          _hp: '',   // honeypot — must stay empty; bots fill this
         },
 
         touched: {
@@ -3546,6 +3568,16 @@
 
         // ---- Submit handler ----
         async handleSubmit() {
+          // Honeypot: reject silently if bot filled the hidden field
+          if (this.fields._hp) return;
+
+          // Rate limit: block re-submissions within 30 seconds
+          const now = Date.now();
+          if (now - this._lastSubmitTime < 30_000) {
+            this.formError = 'Aguarde alguns segundos antes de tentar novamente.';
+            return;
+          }
+
           // Touch all fields to show all errors
           Object.keys(this.touched).forEach(k => { this.touched[k] = true; });
 
@@ -3553,6 +3585,8 @@
             this.formError = 'Por favor, corrija os campos destacados antes de continuar.';
             return;
           }
+
+          this._lastSubmitTime = now;
 
           this.formError = '';
           this.loading = true;
