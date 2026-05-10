@@ -15,6 +15,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.6.0] — 2026-05-05 / 2026-05-08
+
+> Acessibilidade avançada, copy de conversão e robustez do backend.
+
+### Added — Backend
+- `GET /ready` — readiness probe que verifica se o diretório de saída é gravável antes de aceitar tráfego; retorna `503 Service Unavailable` se o diretório não puder ser escrito (útil para health checks de Kubernetes/ECS)
+- Handler global de exceções não tratadas retorna JSON padronizado `{"status": "error", "detail": "..."}` — em produção omite o stack trace, em debug expõe o detalhe completo
+- Validação de path param `reference_month` em `GET /metrics/period/{reference_month}` via regex `^\d{4}-(0[1-9]|1[0-2])$` — erros de formato retornam 422 antes de consultar os artefatos
+
+### Changed — Frontend (Copy & Conversão)
+- Hero badge reorientado para benefício direto; CTA secundário aponta para cases reais; novo FAQ sobre implantação sem equipe de TI
+- Headline da seção de depoimentos reforçada; novo FAQ de urgência Enterprise; CTA Enterprise explicitado na seção de planos
+
+### Fixed — Frontend (Acessibilidade)
+- `aria-expanded` corrigido em todos os accordions e dropdowns Alpine.js
+- Focus rings visíveis em modo high-contrast e navegação por teclado
+- Bug de `id` duplicado no modal exit-intent corrigido — múltiplas instâncias Alpine causavam falha silenciosa de acessibilidade
+
+---
+
 ## [0.5.0] — 2026-05-04
 
 > Documentação expandida, DevEx e CORS configurável.

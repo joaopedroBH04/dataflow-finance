@@ -83,7 +83,8 @@ python -m uvicorn etl_service.main:app --reload --port 8000
 
 Acesse:
 - **Swagger UI**: http://localhost:8000/docs
-- **Health check**: http://localhost:8000/health
+- **Liveness probe**: http://localhost:8000/health
+- **Readiness probe**: http://localhost:8000/ready
 - **Landing page**: abra `index.html` no navegador
 
 ---
@@ -122,6 +123,19 @@ curl -X POST http://localhost:8000/api/v1/run-etl \
   "gaps_detected": 7,
   "output_file_path": "./output/dataflow_2026-03_20260414_233751.xlsx"
 }
+```
+
+---
+
+### Probes de saúde (Infra)
+
+```bash
+# Liveness — retorna 200 se o processo está vivo
+curl http://localhost:8000/health
+
+# Readiness — retorna 200 se o diretório de output está gravável; 503 caso contrário
+# Use este probe em Kubernetes/ECS para segurar tráfego até o disco estar pronto
+curl http://localhost:8000/ready
 ```
 
 ---
@@ -272,6 +286,7 @@ make type-check
 - [x] Sistema de alertas via webhook (Telegram, Slack, WhatsApp)
 - [x] Dashboard de métricas KPI (`GET /metrics/dashboard`)
 - [x] Captura de leads com autenticação por API key
+- [x] Readiness + liveness probes (`GET /ready`, `GET /health`) com handler global de erros
 - [ ] Dashboard web (React + Recharts)
 - [ ] Integração Omie / Conta Azul
 - [ ] Autenticação multi-tenant completa (múltiplos clientes isolados)
