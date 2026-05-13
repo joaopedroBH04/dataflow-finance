@@ -865,6 +865,100 @@
             "priceCurrency": "BRL"
           }
         ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://dataflowfinance.com.br/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Minha equipe técnica vai ter que aprender Python ou SQL?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Não. O pipeline roda automaticamente em segundo plano. Sua equipe financeira continua usando Excel normalmente — o que muda é que o Excel agora é gerado automaticamente pelo nosso motor, já consolidado e reconciliado. Se você quiser, podemos também entregar um dashboard web para eliminar até o Excel."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Preciso pagar mensalidade recorrente de software?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Não existe mensalidade de software. O que cobramos é um investimento único no projeto de construção do pipeline. O código fica hospedado na sua própria infraestrutura (ou na nossa, como serviço opcional) e é seu para sempre. Oferecemos, opcionalmente, um plano de suporte e hospedagem gerenciada (R$ 290–590/mês), mas ele não é obrigatório."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Meu PDV ou plataforma não está na lista de integrações, e agora?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Construímos o extractor em até 48 horas. A arquitetura é feita para isso. Qualquer sistema que permita exportar CSV, XLSX, ou que ofereça uma API REST, consegue ser integrado. No plano Enterprise, esse desenvolvimento não tem custo adicional; nos outros planos, é um adicional de R$ 800 por integração custom."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Como fica a LGPD? Vou precisar enviar dados de clientes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "LGPD by design. Por padrão, o pipeline só processa dados financeiros (valores, horários, formas de pagamento) — nunca dados pessoais de clientes. Se houver CPF ou nome em alguma exportação, anonimizamos automaticamente no primeiro estágio do pipeline. Para Enterprise, emitimos relatório de conformidade LGPD assinado digitalmente, anexável ao seu RIPD."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quanto tempo leva da assinatura do contrato até estar rodando?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "30 a 45 dias corridos. Dividimos em 3 sprints de duas semanas: Sprint 1 — Auditoria técnica e setup da infra. Sprint 2 — Desenvolvimento dos extractors e do motor ETL. Sprint 3 — Testes paralelos com seus dados reais, ajustes finos e deploy. A partir do dia 45, o pipeline já está rodando em produção com o primeiro DRE automatizado na sua mesa."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "E se eu quiser cancelar? O código some comigo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "O código é seu desde o dia do deploy. Se você decidir não renovar o plano de suporte, o pipeline continua funcionando exatamente como foi entregue. Você recebe todo o código-fonte, documentação técnica completa, diagramas de arquitetura e vídeos de handoff."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Como funciona o suporte após o go-live?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Todo plano inclui um período de suporte grátis (30 dias Starter, 90 dias Professional, 12 meses Enterprise). Canal direto via WhatsApp Business com engenheiro sênior, SLA de resposta em 4h úteis (1h no Enterprise) e ajustes de regras de negócio inclusos no pacote de horas mensal."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "R$ 3.500 parece muito. Vale realmente o investimento para o meu restaurante?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Um restaurante que fatura R$ 80.000/mês perde, em média, R$ 1.200 em furos de caixa não detectados e desperdiça R$ 1.800 em horas de conciliação manual — R$ 3.000/mês que saem silenciosamente. Com o Starter a R$ 3.500, o payback acontece em menos de 2 meses. Depois disso, cada real economizado é lucro líquido que fica no seu caixa todos os meses, para sempre."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Já contratei ERP, consultoria e BI antes. Por que a DataFlow seria diferente?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A diferença é que nenhum deles foi construído para o seu negócio específico. ERPs são genéricos e custam caro para customizar. SaaS de BI exige que alguém alimente os dados manualmente. Consultorias entregam diagnóstico, mas não resolvem o problema técnico de integração. A DataFlow constrói um pipeline sob medida que extrai automaticamente de cada uma das suas fontes — com as suas regras de negócio, os seus fluxos, os seus sistemas."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quanto tempo minha equipe precisa dedicar durante a implantação?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Menos do que você imagina — e de forma pontual. Nas primeiras 48 horas pedimos acesso às exportações (iFood, PDV, extrato do adquirente) e uma chamada de 30 minutos para mapear as regras de negócio. A sua equipe só entra novamente na Sprint 3 (validação em paralelo com dados reais), que demanda aproximadamente 2 a 3 horas distribuídas ao longo de 10 dias."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Vocês emitem nota fiscal? É PJ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim, 100% formalizado. DataFlow Finance é uma prestadora de serviços registrada (Simples Nacional), emitimos NFS-e pelo portal da prefeitura, com código de serviço 1.05 (licenciamento de software) ou 1.04 (programação sob encomenda), conforme o contrato. Aceitamos boleto, PIX e transferência. Parcelamento em até 3x sem juros para Professional e Enterprise."
+            }
+          }
+        ]
       }
     ]
   }
@@ -1850,7 +1944,7 @@
 
         <!-- Team Member 1 -->
         <div class="card-border rounded-2xl p-6 text-center">
-          <div class="team-avatar mx-auto mb-4" style="background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop')"></div>
+          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop')"></div>
           <h4 class="text-white font-bold text-lg">João Pedro Costa</h4>
           <p class="text-emerald-400 text-sm font-semibold mb-3">Staff Data Engineer · Founder</p>
           <p class="text-slate-400 text-xs leading-relaxed">
@@ -1865,7 +1959,7 @@
 
         <!-- Team Member 2 -->
         <div class="card-border rounded-2xl p-6 text-center">
-          <div class="team-avatar mx-auto mb-4" style="background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop')"></div>
+          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop')"></div>
           <h4 class="text-white font-bold text-lg">Marina Lopes</h4>
           <p class="text-emerald-400 text-sm font-semibold mb-3">Senior Backend Engineer</p>
           <p class="text-slate-400 text-xs leading-relaxed">
@@ -1880,7 +1974,7 @@
 
         <!-- Team Member 3 -->
         <div class="card-border rounded-2xl p-6 text-center">
-          <div class="team-avatar mx-auto mb-4" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop')"></div>
+          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop')"></div>
           <h4 class="text-white font-bold text-lg">Rafael Siqueira</h4>
           <p class="text-emerald-400 text-sm font-semibold mb-3">Financial Analyst · MBA FGV</p>
           <p class="text-slate-400 text-xs leading-relaxed">
@@ -1920,7 +2014,7 @@
 
         <!-- Case 1 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">4 UNIDADES · BH</span>
             </div>
@@ -1959,7 +2053,7 @@
 
         <!-- Case 2 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">HAMBURGUERIA · SP</span>
             </div>
@@ -1998,7 +2092,7 @@
 
         <!-- Case 3 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">ENTERPRISE · 8 UNIDADES</span>
             </div>
@@ -2037,7 +2131,7 @@
 
         <!-- Case 4 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" style="background-image: url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=500&fit=crop')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">JAPONESA PREMIUM · 2 UNIDADES</span>
             </div>
@@ -3683,6 +3777,21 @@
         entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
       }, { threshold: 0.08 });
       document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    })();
+
+    // ==================================================================
+    // LAZY BACKGROUND IMAGES  —  [data-bg-lazy] elements
+    // ==================================================================
+    (function () {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.style.backgroundImage = e.target.dataset.bgLazy;
+            io.unobserve(e.target);
+          }
+        });
+      }, { rootMargin: '200px' });
+      document.querySelectorAll('[data-bg-lazy]').forEach(el => io.observe(el));
     })();
 
     // ==================================================================
