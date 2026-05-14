@@ -276,6 +276,9 @@ class AcquirerTransactionSchema(BaseModel):
 # FastAPI Request / Response Payloads
 # ====================================================================== #
 
+_VALID_ACQUIRERS = {"stone", "cielo"}
+
+
 class ETLRequest(BaseModel):
     """Payload accepted by POST /api/v1/run-etl."""
 
@@ -287,7 +290,15 @@ class ETLRequest(BaseModel):
         pattern=r"^\d{4}-(0[1-9]|1[0-2])$",
         description="Reference period in YYYY-MM format (e.g. '2026-03').",
     )
-    acquirer_name: str = Field(default="stone", description="Acquirer identifier for logging.")
+    acquirer_name: str = Field(default="stone", description="Acquirer identifier — 'stone' or 'cielo'.")
+
+    @field_validator("acquirer_name")
+    @classmethod
+    def validate_acquirer_name(cls, v: str) -> str:
+        normalised = v.lower().strip()
+        if normalised not in _VALID_ACQUIRERS:
+            raise ValueError(f"acquirer_name must be one of {sorted(_VALID_ACQUIRERS)}; received '{v}'.")
+        return normalised
 
 
 class GapSummary(BaseModel):

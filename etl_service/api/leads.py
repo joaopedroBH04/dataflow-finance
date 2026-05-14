@@ -12,16 +12,41 @@ trigger a Zapier/Make webhook.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from collections import defaultdict, deque
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security, status
 from fastapi.security import APIKeyHeader
 from loguru import logger
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from etl_service.config import settings
+
+# ====================================================================== #
+# In-memory sliding-window rate limiter (resets on process restart)
+# ====================================================================== #
+
+_RATE_WINDOW_SECONDS = 60
+_RATE_MAX_REQUESTS = 5
+_rate_store: dict[str, deque] = defaultdict(deque)
+
+
+def _check_rate_limit(client_ip: str) -> None:
+    """Raises HTTP 429 if the client IP exceeds _RATE_MAX_REQUESTS per window."""
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(seconds=_RATE_WINDOW_SECONDS)
+    timestamps = _rate_store[client_ip]
+    while timestamps and timestamps[0] < cutoff:
+        timestamps.popleft()
+    if len(timestamps) >= _RATE_MAX_REQUESTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Muitas tentativas. Aguarde 1 minuto antes de tentar novamente.",
+            headers={"Retry-After": str(_RATE_WINDOW_SECONDS)},
+        )
+    timestamps.append(now)
 
 
 # ====================================================================== #
@@ -89,11 +114,14 @@ def _get_leads_file() -> Path:
     status_code=status.HTTP_201_CREATED,
     summary="Register a lead from the landing page audit form.",
 )
-async def create_lead(lead: LeadSubmission) -> LeadResponse:
+async def create_lead(lead: LeadSubmission, request: Request) -> LeadResponse:
     """
     Persists a new lead submission and returns a confirmation payload.
     The CRM / sales team should poll GET /leads or receive webhook notifications.
     """
+    client_ip = request.client.host if request.client else "unknown"
+    _check_rate_limit(client_ip)
+
     lead_id = f"LEAD-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
     received_at = datetime.now(timezone.utc).isoformat()
 

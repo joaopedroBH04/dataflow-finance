@@ -18,6 +18,7 @@ swap for Postgres + Redis for distributed worker support.
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
@@ -198,18 +199,29 @@ async def dispatch_alert(alert: Alert) -> None:
 
     payload = alert.model_dump(mode="json")
     async with httpx.AsyncClient(timeout=10.0) as client:
-        for sub in targets:
-            try:
-                response = await client.post(str(sub.webhook_url), json=payload)
-                logger.info(
-                    "[Alerts] Dispatched to {ch} ({status}) — alert={id}",
-                    ch=sub.channel, status=response.status_code, id=alert.id,
-                )
-            except httpx.HTTPError as exc:
-                logger.error(
-                    "[Alerts] Dispatch FAILED to {url}: {exc}",
-                    url=sub.webhook_url, exc=str(exc),
-                )
+        await asyncio.gather(
+            *[_post_to_subscriber(client, sub, payload, alert.id) for sub in targets],
+            return_exceptions=True,
+        )
+
+
+async def _post_to_subscriber(
+    client: httpx.AsyncClient,
+    sub: "AlertSubscriber",
+    payload: dict,
+    alert_id: str,
+) -> None:
+    try:
+        response = await client.post(str(sub.webhook_url), json=payload)
+        logger.info(
+            "[Alerts] Dispatched to {ch} ({status}) — alert={id}",
+            ch=sub.channel, status=response.status_code, id=alert_id,
+        )
+    except httpx.HTTPError as exc:
+        logger.error(
+            "[Alerts] Dispatch FAILED to {url}: {exc}",
+            url=sub.webhook_url, exc=str(exc),
+        )
 
 
 def build_alert_from_gap(gap: dict, reference_month: str) -> Alert:
