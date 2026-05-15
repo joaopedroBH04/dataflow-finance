@@ -33,6 +33,14 @@ _RATE_MAX_REQUESTS = 5
 _rate_store: dict[str, deque] = defaultdict(deque)
 
 
+def _resolve_client_ip(request: Request) -> str:
+    """Returns the real client IP, honoring X-Forwarded-For when behind a proxy."""
+    xff = request.headers.get("X-Forwarded-For")
+    if xff:
+        return xff.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 def _check_rate_limit(client_ip: str) -> None:
     """Raises HTTP 429 if the client IP exceeds _RATE_MAX_REQUESTS per window."""
     now = datetime.now(timezone.utc)
@@ -119,7 +127,7 @@ async def create_lead(lead: LeadSubmission, request: Request) -> LeadResponse:
     Persists a new lead submission and returns a confirmation payload.
     The CRM / sales team should poll GET /leads or receive webhook notifications.
     """
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = _resolve_client_ip(request)
     _check_rate_limit(client_ip)
 
     lead_id = f"LEAD-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
@@ -179,3 +187,17 @@ async def list_leads(
                     logger.warning("[Leads] Skipping malformed line.")
 
     return leads[skip : skip + limit]
+
+
+@router.get(
+    "/count",
+    summary="Return the total number of captured leads (lightweight, no data loaded).",
+    dependencies=[Depends(_require_leads_api_key)],
+)
+async def count_leads() -> dict:
+    """Streams the JSONL file line-by-line to count leads without loading full payloads."""
+    leads_file = _get_leads_file()
+    if not leads_file.exists():
+        return {"count": 0}
+    count = sum(1 for line in leads_file.open("r", encoding="utf-8") if line.strip())
+    return {"count": count}
