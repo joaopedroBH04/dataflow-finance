@@ -25,9 +25,12 @@ from enum import Enum
 from typing import Optional
 
 import httpx
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, Security, status
+from fastapi.security import APIKeyHeader
 from loguru import logger
 from pydantic import AnyHttpUrl, BaseModel, Field
+
+from etl_service.config import settings
 
 
 # ====================================================================== #
@@ -93,6 +96,22 @@ _ALERTS: dict[str, Alert] = {}
 
 router = APIRouter(prefix="/alerts", tags=["Alerts"])
 
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+async def _require_alerts_api_key(
+    api_key: Optional[str] = Security(_api_key_header),
+) -> None:
+    """Guards alert management endpoints with an API key (skipped when key is unset)."""
+    configured = settings.leads_api_key
+    if not configured:
+        return  # Auth disabled — dev/local environment
+    if api_key != configured:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid or missing X-API-Key header.",
+        )
+
 
 # ---------------------------------------------------------------------- #
 # Subscribers
@@ -103,6 +122,7 @@ router = APIRouter(prefix="/alerts", tags=["Alerts"])
     response_model=AlertSubscriber,
     status_code=status.HTTP_201_CREATED,
     summary="Register a webhook to receive alerts.",
+    dependencies=[Depends(_require_alerts_api_key)],
 )
 async def register_subscriber(req: SubscriberCreateRequest) -> AlertSubscriber:
     sub = AlertSubscriber(
@@ -118,7 +138,11 @@ async def register_subscriber(req: SubscriberCreateRequest) -> AlertSubscriber:
     return sub
 
 
-@router.get("/subscribers", response_model=list[AlertSubscriber])
+@router.get(
+    "/subscribers",
+    response_model=list[AlertSubscriber],
+    dependencies=[Depends(_require_alerts_api_key)],
+)
 async def list_subscribers() -> list[AlertSubscriber]:
     return list(_SUBSCRIBERS.values())
 
@@ -127,6 +151,7 @@ async def list_subscribers() -> list[AlertSubscriber]:
     "/subscribers/{subscriber_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=Response,
+    dependencies=[Depends(_require_alerts_api_key)],
 )
 async def delete_subscriber(subscriber_id: str) -> Response:
     if subscriber_id not in _SUBSCRIBERS:

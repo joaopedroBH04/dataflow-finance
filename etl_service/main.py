@@ -140,6 +140,10 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+    # Prevent HTTPS downgrade attacks and MitM cookie hijacking (2-year max-age).
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    # Prevent proxies and browsers from caching sensitive API responses.
+    response.headers["Cache-Control"] = "no-store"
     return response
 
 # ====================================================================== #

@@ -12,10 +12,13 @@ trigger a Zapier/Make webhook.
 from __future__ import annotations
 
 import json
+import re
 from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
+
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security, status
 from fastapi.security import APIKeyHeader
@@ -71,6 +74,15 @@ class LeadSubmission(BaseModel):
     phone: str = Field(..., min_length=10, max_length=20)
     email: Optional[EmailStr] = None
     source: str = Field(default="landing_page")
+
+    @field_validator("name", "restaurant", mode="before")
+    @classmethod
+    def sanitize_text(cls, v: object) -> str:
+        """Strip HTML tags and null bytes to prevent XSS if data is rendered in a CRM."""
+        if not isinstance(v, str):
+            return str(v)
+        v = _HTML_TAG_RE.sub("", v).replace("\x00", "").strip()
+        return v
 
     @field_validator("phone")
     @classmethod
