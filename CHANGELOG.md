@@ -15,6 +15,34 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.7.0] — 2026-05-09 / 2026-05-17
+
+> Hardening de segurança da API, rastreabilidade de requests, rate limiting e DevEx centralizado.
+
+### Added — Backend
+- `X-Request-ID` middleware: propaga ou gera um UUID por request para rastreabilidade ponta-a-ponta nos logs e nas respostas (header `X-Request-ID`)
+- `GET /api/v1/leads/count` — conta leads sem carregar payloads; streaming linha a linha do JSONL protegido por `X-API-Key`
+- Rate limiting in-memory por IP com janela deslizante de 60 s / 5 requisições em `POST /leads/` — retorna `429 Too Many Requests` com header `Retry-After`
+- Despacho concorrente de webhooks com `asyncio.gather` no módulo de alertas — todos os subscribers são notificados em paralelo, reduzindo latência em múltiplos endpoints
+
+### Added — Security
+- Headers de segurança em todas as respostas via middleware: `Strict-Transport-Security` (HSTS 2 anos + preload), `Cache-Control: no-store`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`
+- CSP via `<meta http-equiv="Content-Security-Policy">` na landing page restringindo `script-src`, `style-src` e `connect-src` às origens legítimas
+- Honeypot field oculto no formulário de leads para detectar bots
+- Sanitização de inputs HTML em `LeadSubmission` (strip de tags e null bytes) para prevenir XSS se dados forem renderizados em um CRM
+- Validação de `acquirer_name` via `field_validator` no schema `ETLRequest` — rejeita valores fora de `{"stone", "cielo"}` antes de tocar o filesystem
+
+### Added — Performance & SEO
+- JSON-LD `FAQPage` na landing page para rich results no Google
+- Lazy loading de background images via `IntersectionObserver` — reduz LCP e payload inicial
+- `pyproject.toml` centralizado com configuração de `ruff`, `mypy` e `pytest` — elimina flags duplicadas entre CLI e Makefile
+
+### Added — DevEx
+- `make setup` — copia `.env.example → .env` (se não existir) e instala dependências de dev em um único comando para onboarding de novos contribuidores
+- `make check` — atalho que executa lint + verificação de tipos em sequência
+
+---
+
 ## [0.6.0] — 2026-05-05 / 2026-05-08
 
 > Acessibilidade avançada, copy de conversão e robustez do backend.

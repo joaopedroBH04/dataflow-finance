@@ -18,14 +18,18 @@ cp .env.example .env
 ## Development workflow
 
 ```bash
+make setup        # First-run: copies .env.example → .env and installs dev deps
 make run          # Start dev server at http://localhost:8000
 make test         # Run test suite (pytest)
 make lint         # Lint + auto-fix with ruff
 make type-check   # Static type check with mypy
+make check        # lint + type-check in one command (CI shortcut)
 make clean        # Remove __pycache__, logs, caches
 ```
 
 Run `make help` for the full list.
+
+> Tool configuration (ruff, mypy, pytest) lives in `pyproject.toml` — no flags needed in CLI calls.
 
 ## Project structure
 
