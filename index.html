@@ -3058,6 +3058,7 @@
               aria-required="true"
               aria-describedby="field-name-error"
               class="form-input w-full px-4 py-3 rounded-xl text-sm"
+              autocomplete="name"
               placeholder="Ex: João Silva"
             />
             <p id="field-name-error" x-show="errors.name && touched.name" x-text="errors.name" class="mt-1.5 text-xs text-red-400" role="alert"></p>
@@ -3078,6 +3079,7 @@
               aria-required="true"
               aria-describedby="field-restaurant-error"
               class="form-input w-full px-4 py-3 rounded-xl text-sm"
+              autocomplete="organization"
               placeholder="Ex: Parrilla & Chopperia Horizonte"
             />
             <p id="field-restaurant-error" x-show="errors.restaurant && touched.restaurant" x-text="errors.restaurant" class="mt-1.5 text-xs text-red-400" role="alert"></p>
@@ -3149,6 +3151,7 @@
               aria-required="true"
               aria-describedby="field-phone-error"
               class="form-input w-full px-4 py-3 rounded-xl text-sm"
+              autocomplete="tel"
               placeholder="(11) 99999-9999"
               maxlength="15"
               @input="maskPhone($event)"
@@ -3927,6 +3930,7 @@
     (function () {
       const cv = document.getElementById('hero-canvas');
       if (!cv) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { cv.style.display = 'none'; return; }
       const ctx = cv.getContext('2d');
       function resize() { cv.width = cv.offsetWidth; cv.height = cv.offsetHeight; }
       resize(); window.addEventListener('resize', resize);
@@ -3957,6 +3961,7 @@
     // 3D TILT ON CARDS
     // ==================================================================
     (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       document.querySelectorAll('.tilt-card').forEach(c => {
         c.addEventListener('mousemove', e => {
           const r = c.getBoundingClientRect();
@@ -4440,6 +4445,19 @@
         if (!card) return;
         card.setAttribute('title', msg);
         card.style.cursor = 'help';
+      });
+    })();
+
+    // ==================================================================
+    // A11Y — Auto-apply aria-hidden to decorative SVGs inside buttons/links
+    // Buttons and links already provide their accessible name via text or
+    // aria-label; SVG icons inside them are purely decorative.
+    // ==================================================================
+    (function () {
+      document.querySelectorAll('a, button').forEach(function (el) {
+        el.querySelectorAll('svg:not([aria-label]):not([role="img"])').forEach(function (svg) {
+          svg.setAttribute('aria-hidden', 'true');
+        });
       });
     })();
   </script>
