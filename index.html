@@ -970,6 +970,14 @@
               "@type": "Answer",
               "text": "Sim, 100% formalizado. DataFlow Finance é uma prestadora de serviços registrada (Simples Nacional), emitimos NFS-e pelo portal da prefeitura, com código de serviço 1.05 (licenciamento de software) ou 1.04 (programação sob encomenda), conforme o contrato. Aceitamos boleto, PIX e transferência. Parcelamento em até 3x sem juros para Professional e Enterprise."
             }
+          },
+          {
+            "@type": "Question",
+            "name": "Meu restaurante fatura menos de R$ 80k/mês. O pipeline ainda vale?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Depende — e somos honestos sobre isso. Para restaurantes que faturam entre R$ 40k e R$ 80k/mês, o Starter geralmente tem payback entre 3 e 5 meses: a combinação de furos não detectados e horas de conciliação manual ainda representa R$ 800–R$ 1.500 desperdiçados por mês nessa faixa. Se o faturamento for abaixo de R$ 40k, é possível que a auditoria gratuita aponte que o momento ainda não é ideal — e se for esse o caso, a gente diz antes de qualquer proposta. Não existe compromisso na auditoria: é diagnóstico real, sem pressão."
+            }
           }
         ]
       }
@@ -3241,7 +3249,7 @@
           Tiramos as dúvidas <span class="gradient-text">antes da reunião.</span>
         </h2>
         <p class="text-slate-400">
-          As 8 perguntas que mais ouvimos de donos de restaurante que estão avaliando contratar infraestrutura dedicada.
+          As 12 perguntas que mais ouvimos de donos de restaurante que estão avaliando contratar infraestrutura dedicada.
         </p>
       </div>
 
@@ -3340,6 +3348,18 @@
           </summary>
           <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
             <strong class="text-white">Faça a conta com os seus próprios números:</strong> um restaurante que fatura R$ 80.000/mês perde, em média, R$ 1.200 em furos de caixa não detectados e desperdiça R$ 1.800 em horas de conciliação manual — <strong class="text-emerald-400">R$ 3.000/mês</strong> que saem silenciosamente. Com o Starter a R$ 3.500, o payback acontece em menos de 2 meses. Depois disso, cada real economizado é lucro líquido que fica no seu caixa todos os meses, para sempre. <strong class="text-white">O pipeline é um ativo do seu negócio, não uma despesa recorrente.</strong> Se a auditoria gratuita mostrar que os números do seu caso não justificam o investimento, somos os primeiros a dizer — sem pressão.
+          </div>
+        </details>
+
+        <details class="faq-item card-border rounded-xl p-0 overflow-hidden">
+          <summary class="flex items-center justify-between p-5 hover:bg-navy-800/30 transition-colors">
+            <span class="text-white font-semibold text-base">Meu restaurante fatura menos de R$ 80k/mês. O pipeline ainda vale?</span>
+            <svg class="faq-chevron w-5 h-5 text-emerald-400 flex-shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-4">
+            <strong class="text-white">Depende — e somos honestos sobre isso.</strong> Para restaurantes que faturam entre R$ 40k e R$ 80k/mês, o Starter geralmente tem payback entre 3 e 5 meses: a combinação de furos não detectados e horas de conciliação manual ainda representa R$ 800–R$ 1.500 desperdiçados por mês nessa faixa. Se o seu faturamento for abaixo de R$ 40k, é possível que a auditoria gratuita aponte que o momento ainda não é ideal — e se for esse o caso, <strong class="text-white">a gente diz antes de qualquer proposta</strong>. Não existe compromisso na auditoria: é diagnóstico real, sem pressão.
           </div>
         </details>
 
@@ -4067,13 +4087,16 @@
     // ==================================================================
     (function () {
       const leads = [
-        { initials: 'MO', name: 'Marcelo O., São Paulo/SP',    action: 'solicitou uma auditoria gratuita',        time: 'há 2 minutos'  },
-        { initials: 'TF', name: 'Tatiane F., Curitiba/PR',     action: 'está analisando o Plano Professional',    time: 'há 5 minutos'  },
-        { initials: 'RS', name: 'Rodrigo S., Rio de Janeiro/RJ', action: 'recebeu o diagnóstico de furos de caixa', time: 'há 11 minutos' },
-        { initials: 'AC', name: 'Ana Clara M., Belo Horizonte/MG', action: 'solicitou uma auditoria gratuita',    time: 'há 19 minutos' },
-        { initials: 'PL', name: 'Paulo L., Florianópolis/SC',  action: 'contratou o Plano Starter',               time: 'há 34 minutos' },
-        { initials: 'BN', name: 'Bruno N., Porto Alegre/RS',   action: 'está analisando o Plano Enterprise',      time: 'há 48 minutos' },
-        { initials: 'LM', name: 'Larissa M., Campinas/SP',     action: 'solicitou uma auditoria gratuita',        time: 'há 1 hora'     },
+        { initials: 'MO', name: 'Marcelo O., São Paulo/SP',       action: 'solicitou uma auditoria gratuita',              time: 'há 2 minutos'  },
+        { initials: 'TF', name: 'Tatiane F., Curitiba/PR',        action: 'está analisando o Plano Professional',          time: 'há 5 minutos'  },
+        { initials: 'RS', name: 'Rodrigo S., Rio de Janeiro/RJ',  action: 'recebeu o diagnóstico de furos de caixa',       time: 'há 11 minutos' },
+        { initials: 'AC', name: 'Ana Clara M., Belo Horizonte/MG',action: 'solicitou uma auditoria gratuita',              time: 'há 19 minutos' },
+        { initials: 'PL', name: 'Paulo L., Florianópolis/SC',     action: 'contratou o Plano Starter',                     time: 'há 34 minutos' },
+        { initials: 'BN', name: 'Bruno N., Porto Alegre/RS',      action: 'está analisando o Plano Enterprise',            time: 'há 48 minutos' },
+        { initials: 'LM', name: 'Larissa M., Campinas/SP',        action: 'solicitou uma auditoria gratuita',              time: 'há 1 hora'     },
+        { initials: 'CR', name: 'Carlos R., Recife/PE',           action: 'identificou R$ 3.800/mês em furos na auditoria',time: 'há 1h 20min'  },
+        { initials: 'JB', name: 'Juliana B., Brasília/DF',        action: 'assinou o Plano Professional · 2 unidades',     time: 'há 2 horas'    },
+        { initials: 'FM', name: 'Felipe M., Fortaleza/CE',        action: 'recuperou R$ 6.200 no primeiro mês de pipeline',time: 'há 3 horas'    },
       ];
       const popup   = document.getElementById('social-proof');
       const avatar  = document.getElementById('sp-avatar');
