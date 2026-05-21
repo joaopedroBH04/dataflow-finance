@@ -52,6 +52,10 @@ def _check_rate_limit(client_ip: str) -> None:
     while timestamps and timestamps[0] < cutoff:
         timestamps.popleft()
     if len(timestamps) >= _RATE_MAX_REQUESTS:
+        logger.warning(
+            "[Leads] Rate limit exceeded — ip={ip}, {n} requests in {w}s window",
+            ip=client_ip, n=len(timestamps), w=_RATE_WINDOW_SECONDS,
+        )
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Muitas tentativas. Aguarde 1 minuto antes de tentar novamente.",

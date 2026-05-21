@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -277,6 +278,7 @@ class AcquirerTransactionSchema(BaseModel):
 # ====================================================================== #
 
 _VALID_ACQUIRERS = {"stone", "cielo"}
+_ALLOWED_EXTENSIONS = {".csv", ".xlsx", ".xls"}
 
 
 class ETLRequest(BaseModel):
@@ -291,6 +293,24 @@ class ETLRequest(BaseModel):
         description="Reference period in YYYY-MM format (e.g. '2026-03').",
     )
     acquirer_name: str = Field(default="stone", description="Acquirer identifier — 'stone' or 'cielo'.")
+
+    @field_validator("ifood_file_path", "pdv_file_path", "acquirer_file_path")
+    @classmethod
+    def validate_file_path(cls, v: str) -> str:
+        """Blocks path traversal and restricts inputs to supported file types."""
+        v = v.strip()
+        try:
+            parts = Path(v).parts
+        except Exception as exc:
+            raise ValueError(f"Invalid file path: {v!r}.") from exc
+        if ".." in parts:
+            raise ValueError("Path traversal ('..') is not allowed in file paths.")
+        ext = Path(v).suffix.lower()
+        if ext not in _ALLOWED_EXTENSIONS:
+            raise ValueError(
+                f"Unsupported file extension '{ext}'. Allowed: {sorted(_ALLOWED_EXTENSIONS)}."
+            )
+        return v
 
     @field_validator("acquirer_name")
     @classmethod

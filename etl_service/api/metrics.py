@@ -168,6 +168,44 @@ async def dashboard(trend_months: int = Query(6, ge=1, le=24)) -> DashboardRespo
 
 
 # ---------------------------------------------------------------------- #
+# GET /metrics/periods  — lightweight index of available months
+# ---------------------------------------------------------------------- #
+
+class PeriodSummary(BaseModel):
+    """Compact summary returned by GET /metrics/periods."""
+
+    reference_month: str
+    gross_revenue_brl: float
+    net_revenue_brl: float
+    gaps_count: int
+
+
+@router.get(
+    "/periods",
+    response_model=list[PeriodSummary],
+    summary="List all available reference periods with a compact financial summary.",
+)
+async def list_periods() -> list[PeriodSummary]:
+    """
+    Returns one entry per processed month, sorted chronologically.
+    Lightweight alternative to /dashboard — suitable for populating a
+    period-selector dropdown in the frontend.
+    """
+    artefacts = _read_all_dre_artefacts()
+    summaries = [
+        PeriodSummary(
+            reference_month=a.get("reference_month", "N/A"),
+            gross_revenue_brl=float(a.get("total_gross_revenue_brl", 0) or 0),
+            net_revenue_brl=float(a.get("net_revenue_brl", 0) or 0),
+            gaps_count=int(a.get("gaps_detected", 0) or 0),
+        )
+        for a in artefacts
+    ]
+    summaries.sort(key=lambda s: s.reference_month)
+    return summaries
+
+
+# ---------------------------------------------------------------------- #
 # GET /metrics/period/{reference_month}
 # ---------------------------------------------------------------------- #
 
