@@ -146,6 +146,30 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Cache-Control"] = "no-store"
     return response
 
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Emits a structured access log line for every HTTP request."""
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = round((time.perf_counter() - start) * 1000, 1)
+    xff = request.headers.get("X-Forwarded-For", "")
+    client_ip = xff.split(",")[0].strip() if xff else (
+        request.client.host if request.client else "unknown"
+    )
+    # X-Request-ID is set on the response by the add_request_id middleware (inner).
+    request_id = response.headers.get("X-Request-ID", "-")
+    logger.info(
+        "{method} {path} → {status} {elapsed}ms [ip={ip} rid={rid}]",
+        method=request.method,
+        path=request.url.path,
+        status=response.status_code,
+        elapsed=elapsed_ms,
+        ip=client_ip,
+        rid=request_id,
+    )
+    return response
+
 # ====================================================================== #
 # Register routers (metrics dashboard, alerts, lead capture)
 # ====================================================================== #

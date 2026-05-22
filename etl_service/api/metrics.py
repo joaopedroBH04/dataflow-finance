@@ -232,3 +232,67 @@ async def period_metrics(
             detail=f"No DRE artefact found for reference month '{reference_month}'.",
         )
     return _as_period_metrics(match)
+
+
+# ---------------------------------------------------------------------- #
+# GET /metrics/period/{reference_month}/gaps  — gap drill-down
+# ---------------------------------------------------------------------- #
+
+class GapDetail(BaseModel):
+    """Full detail of a single detected cash-flow gap."""
+
+    transaction_id: Optional[str] = None
+    source: Optional[str] = None
+    gap_type: str
+    amount_brl: float
+    detail: str
+
+
+@router.get(
+    "/period/{reference_month}/gaps",
+    response_model=list[GapDetail],
+    summary="List all cash-flow gaps detected for a specific reference period.",
+)
+async def period_gaps(
+    reference_month: Annotated[
+        str,
+        FPath(
+            pattern=r"^\d{4}-(0[1-9]|1[0-2])$",
+            description="Period in YYYY-MM format, e.g. '2026-03'.",
+        ),
+    ],
+    min_amount: float = Query(0.0, ge=0, description="Filter gaps with amount ≥ this value (BRL)."),
+) -> list[GapDetail]:
+    """
+    Returns the full gap list for the requested month, optionally filtered
+    by a minimum gap amount. Ordered by amount descending (largest first).
+    """
+    artefacts = _read_all_dre_artefacts()
+    match = next(
+        (a for a in artefacts if a.get("reference_month") == reference_month),
+        None,
+    )
+    if not match:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No DRE artefact found for reference month '{reference_month}'.",
+        )
+
+    raw_gaps: list[dict] = match.get("gaps", []) or []
+    details = [
+        GapDetail(
+            transaction_id=g.get("transaction_id"),
+            source=g.get("source"),
+            gap_type=g.get("gap_type", "UNKNOWN"),
+            amount_brl=round(float(g.get("amount_brl", 0) or 0), 2),
+            detail=g.get("detail", ""),
+        )
+        for g in raw_gaps
+        if float(g.get("amount_brl", 0) or 0) >= min_amount
+    ]
+    details.sort(key=lambda g: g.amount_brl, reverse=True)
+    logger.info(
+        "[Metrics] Gap drill-down — period={p}, returned={n}, min_amount={m}",
+        p=reference_month, n=len(details), m=min_amount,
+    )
+    return details

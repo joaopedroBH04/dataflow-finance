@@ -193,16 +193,25 @@ async def list_leads(
         return []
 
     leads: list[dict] = []
+    valid_idx = 0
     with open(leads_file, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                try:
-                    leads.append(json.loads(line))
-                except json.JSONDecodeError:
-                    logger.warning("[Leads] Skipping malformed line.")
-
-    return leads[skip : skip + limit]
+        for raw_line in f:
+            raw_line = raw_line.strip()
+            if not raw_line:
+                continue
+            try:
+                record = json.loads(raw_line)
+            except json.JSONDecodeError:
+                logger.warning("[Leads] Skipping malformed JSONL line.")
+                continue
+            if valid_idx < skip:
+                valid_idx += 1
+                continue
+            leads.append(record)
+            valid_idx += 1
+            if len(leads) >= limit:
+                break
+    return leads
 
 
 @router.get(
