@@ -20,6 +20,9 @@ from typing import Optional
 
 _HTML_TAG_RE = re.compile(r"<[^>]+>")
 
+_VALID_REVENUE_BRACKETS = {"50k-100k", "100k-250k", "250k-500k", "500k+"}
+_ALLOWED_SYSTEM_IDS = {"ifood", "rappi", "pdv", "stone", "cielo", "excel"}
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security, status
 from fastapi.security import APIKeyHeader
 from loguru import logger
@@ -78,6 +81,7 @@ class LeadSubmission(BaseModel):
     phone: str = Field(..., min_length=10, max_length=20)
     email: Optional[EmailStr] = None
     source: str = Field(default="landing_page")
+    lgpd_consent: bool = Field(..., description="Explicit LGPD consent — must be True.")
 
     @field_validator("name", "restaurant", mode="before")
     @classmethod
@@ -86,6 +90,37 @@ class LeadSubmission(BaseModel):
         if not isinstance(v, str):
             return str(v)
         v = _HTML_TAG_RE.sub("", v).replace("\x00", "").strip()
+        return v
+
+    @field_validator("revenue")
+    @classmethod
+    def validate_revenue(cls, v: str) -> str:
+        """Reject values outside the known revenue brackets shown in the form."""
+        if v not in _VALID_REVENUE_BRACKETS:
+            raise ValueError(
+                f"revenue must be one of {sorted(_VALID_REVENUE_BRACKETS)}; received '{v}'."
+            )
+        return v
+
+    @field_validator("systems", mode="before")
+    @classmethod
+    def validate_systems(cls, v: object) -> list[str]:
+        """Allow-list system IDs and strip any unexpected values."""
+        if not isinstance(v, list):
+            raise ValueError("systems must be a list.")
+        cleaned = [s for s in v if isinstance(s, str) and s in _ALLOWED_SYSTEM_IDS]
+        if not cleaned:
+            raise ValueError(
+                f"At least one valid system is required. Allowed: {sorted(_ALLOWED_SYSTEM_IDS)}."
+            )
+        return cleaned
+
+    @field_validator("lgpd_consent")
+    @classmethod
+    def require_consent(cls, v: bool) -> bool:
+        """LGPD consent is mandatory — reject the submission if False."""
+        if not v:
+            raise ValueError("O consentimento LGPD é obrigatório para processar sua solicitação.")
         return v
 
     @field_validator("phone")

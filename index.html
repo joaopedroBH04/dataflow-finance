@@ -3180,6 +3180,44 @@
             <p id="field-phone-error" x-show="errors.phone && touched.phone" x-text="errors.phone" class="mt-1.5 text-xs text-red-400" role="alert"></p>
           </div>
 
+          <!-- LGPD Consent -->
+          <div>
+            <label
+              class="flex items-start gap-3 cursor-pointer group"
+              :class="{ 'opacity-100': true }"
+            >
+              <input
+                type="checkbox"
+                id="field-lgpd"
+                x-model="fields.lgpdConsent"
+                @change="touch('lgpdConsent')"
+                class="sr-only"
+                aria-required="true"
+                aria-describedby="field-lgpd-error"
+                :aria-invalid="errors.lgpdConsent && touched.lgpdConsent ? 'true' : 'false'"
+              />
+              <span
+                :class="{
+                  'bg-emerald-500 border-emerald-500': fields.lgpdConsent,
+                  'border-red-500': errors.lgpdConsent && touched.lgpdConsent && !fields.lgpdConsent,
+                  'border-slate-600 group-hover:border-slate-400': !fields.lgpdConsent && !(errors.lgpdConsent && touched.lgpdConsent)
+                }"
+                class="w-4 h-4 mt-0.5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all"
+                aria-hidden="true"
+              >
+                <svg x-show="fields.lgpdConsent" class="w-2.5 h-2.5 text-navy-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <span class="text-xs text-slate-400 leading-relaxed">
+                Li e concordo com o tratamento dos meus dados pessoais (nome, telefone) pela DataFlow Finance para fins de contato comercial, conforme a
+                <a href="#faq" class="text-emerald-500 hover:text-emerald-400 underline underline-offset-2 font-medium">Política de Privacidade e LGPD</a>.
+                Posso revogar este consentimento a qualquer momento.
+              </span>
+            </label>
+            <p id="field-lgpd-error" x-show="errors.lgpdConsent && touched.lgpdConsent" x-text="errors.lgpdConsent" class="mt-1.5 text-xs text-red-400" role="alert"></p>
+          </div>
+
           <!-- Submit Button -->
           <div class="pt-2">
             <button
@@ -3634,6 +3672,7 @@
           revenue: '',
           systems: [],
           phone: '',
+          lgpdConsent: false,
           _hp: '',   // honeypot — must stay empty; bots fill this
         },
 
@@ -3643,6 +3682,7 @@
           revenue: false,
           systems: false,
           phone: false,
+          lgpdConsent: false,
         },
 
         availableSystems: [
@@ -3672,6 +3712,9 @@
           const raw = this.fields.phone.replace(/\D/g, '');
           if (!raw || raw.length < 10 || raw.length > 11) {
             e.phone = 'Informe um WhatsApp válido com DDD (ex: 11 99999-9999).';
+          }
+          if (!this.fields.lgpdConsent) {
+            e.lgpdConsent = 'É necessário aceitar o tratamento de dados para continuar.';
           }
           return e;
         },
@@ -3734,12 +3777,13 @@
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                name:       this.fields.name,
-                restaurant: this.fields.restaurant,
-                revenue:    this.fields.revenue,
-                systems:    this.fields.systems,
-                phone:      this.fields.phone,
-                source:     'landing_page',
+                name:         this.fields.name,
+                restaurant:   this.fields.restaurant,
+                revenue:      this.fields.revenue,
+                systems:      this.fields.systems,
+                phone:        this.fields.phone,
+                source:       'landing_page',
+                lgpd_consent: this.fields.lgpdConsent,
               }),
             });
 
