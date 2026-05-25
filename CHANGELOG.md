@@ -5,9 +5,34 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-## [Unreleased]
+## [Unreleased] — em progresso desde 2026-05-18
 
-### Planned
+> Observabilidade da API, controles LGPD, segurança de inputs, acessibilidade e copywriting de conversão.
+
+### Added — Backend & API
+- `GET /api/v1/metrics/periods` — índice leve de todos os períodos processados com resumo financeiro compacto (gross, net, gaps); ideal para popular seletores de período no frontend sem carregar o dashboard completo
+- `GET /api/v1/metrics/period/{month}/gaps` — drill-down de furos de caixa com filtro por valor mínimo (`?min_amount=`) e resultado ordenado por montante decrescente (maiores primeiro)
+- Middleware de access logging estruturado: emite uma linha de log por request com método, path, status HTTP, latência em ms, IP real (honra `X-Forwarded-For`) e `X-Request-ID`
+- Validação de path traversal nos campos `*_file_path` do `ETLRequest` — rejeita sequências `..` e extensões fora de `{.csv, .xlsx, .xls}` antes de qualquer acesso ao filesystem
+- Log de warning estruturado quando um IP ultrapassa o rate limit em `POST /leads/` (IP + contagem + janela de tempo)
+
+### Added — Security & LGPD
+- Checkbox de consentimento LGPD explícito no formulário da landing page — campo `lgpd_consent` enviado ao backend somente quando o usuário marca ativamente a caixa; submissão bloqueada de outra forma
+- Allow-listing de inputs no backend: `revenue` validado contra brackets conhecidos (`50k-100k`, `100k-250k`, `250k-500k`, `500k+`); `systems` filtrado contra IDs permitidos (`ifood`, `rappi`, `pdv`, `stone`, `cielo`, `excel`)
+
+### Fixed — Frontend (Acessibilidade)
+- Focus ring global `focus-visible` aplicado uniformemente — elimina regressões de acessibilidade ao adicionar novos componentes
+- `aria-label` e `role` revisados em todos os elementos interativos do modal de exit-intent
+- Focus trap implementado no modal: Tab / Shift+Tab ciclam apenas dentro do modal enquanto ele está aberto, cumprindo WCAG 2.1 AA 2.1.2
+
+### Changed — Frontend (Copy & Conversão)
+- Contagem de perguntas do FAQ corrigida (exibição incorreta em mobile)
+- Nova entrada no FAQ endereçando objeção de custo-benefício para PMEs vs. planilhas manuais
+- Seção de social proof enriquecida com dados de ROI mais específicos e depoimentos revisados
+
+---
+
+## [Planned]
 - Dashboard web (React + Recharts)
 - Integração Omie / Conta Azul
 - Autenticação multi-tenant completa (múltiplos clientes isolados)

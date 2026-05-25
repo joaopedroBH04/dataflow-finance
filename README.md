@@ -199,23 +199,32 @@ curl -X POST http://localhost:8000/api/v1/alerts/{alert_id}/ack
 ```
 dataflow-finance/
 ├── etl_service/
-│   ├── config.py                   # Settings (pydantic-settings)
-│   ├── main.py                     # FastAPI app entrypoint
+│   ├── config.py                   # Settings (pydantic-settings + env prefix DATAFLOW_)
+│   ├── main.py                     # FastAPI app + middleware stack (logging, security, CORS)
+│   ├── api/
+│   │   ├── leads.py                # Lead capture, rate limiter, LGPD consent validation
+│   │   ├── alerts.py               # Webhook subscriptions + concurrent alert dispatcher
+│   │   └── metrics.py              # Dashboard KPIs, period index, gap drill-down
 │   ├── extractors/
-│   │   ├── base.py                 # BaseExtractor (ABC + Factory)
+│   │   ├── base.py                 # BaseExtractor (ABC + Factory pattern)
 │   │   ├── ifood.py                # iFood CSV extractor
 │   │   ├── pdv.py                  # PDV CSV/XLSX extractor
 │   │   └── stone_cielo.py          # Stone/Cielo acquirer extractor
 │   ├── validators/
-│   │   └── schemas.py              # Pydantic schemas + ETLRequest/Response
+│   │   └── schemas.py              # Pydantic v2 schemas + ETLRequest/Response
 │   ├── transformers/
-│   │   └── financial.py            # Merge, business rules, gap detection
+│   │   └── financial.py            # Merge, business rules, DRE, gap detection
 │   └── loaders/
-│       └── report.py               # Excel + JSON report writer
-├── index.html                      # Landing page (B2B sales)
-├── requirements.txt
-├── .env.example
+│       └── report.py               # Excel (4 tabs) + JSON report writer
+├── index.html                      # Landing page B2B (Tailwind CDN + Alpine.js)
+├── requirements.txt                # Production dependencies (pinned minor versions)
+├── requirements-dev.txt            # Dev/test dependencies (pytest, ruff, mypy, stubs)
+├── pyproject.toml                  # Unified tool config: ruff, mypy, pytest
+├── Makefile                        # Developer shortcuts (run, test, lint, setup, clean)
+├── .env.example                    # Environment variable template (copy → .env)
 ├── .gitignore
+├── CHANGELOG.md                    # Version history (Keep a Changelog format)
+├── CONTRIBUTING.md                 # Setup guide, workflow, commit conventions
 └── README.md
 ```
 
@@ -285,8 +294,14 @@ make type-check
 - [x] Landing page B2B
 - [x] Sistema de alertas via webhook (Telegram, Slack, WhatsApp)
 - [x] Dashboard de métricas KPI (`GET /metrics/dashboard`)
-- [x] Captura de leads com autenticação por API key
-- [x] Readiness + liveness probes (`GET /ready`, `GET /health`) com handler global de erros
+- [x] Índice de períodos disponíveis (`GET /metrics/periods`)
+- [x] Drill-down de furos por período (`GET /metrics/period/{month}/gaps`)
+- [x] Captura de leads com autenticação por API key e rate limiting por IP
+- [x] Readiness + liveness probes com handler global de erros
+- [x] Access logging estruturado com latência, IP e Request-ID por request
+- [x] Headers de segurança em todas as respostas (HSTS, CSP, X-Frame-Options, Permissions-Policy)
+- [x] Validação de path traversal e allow-list de extensões nos inputs do ETL
+- [x] Consentimento LGPD explícito no formulário + allow-listing de inputs no backend
 - [ ] Dashboard web (React + Recharts)
 - [ ] Integração Omie / Conta Azul
 - [ ] Autenticação multi-tenant completa (múltiplos clientes isolados)
