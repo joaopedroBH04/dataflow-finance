@@ -169,12 +169,17 @@ async def delete_subscriber(subscriber_id: str) -> Response:
     "/active",
     response_model=list[Alert],
     summary="List all unacknowledged alerts.",
+    dependencies=[Depends(_require_alerts_api_key)],
 )
 async def list_active_alerts() -> list[Alert]:
     return [a for a in _ALERTS.values() if not a.acknowledged]
 
 
-@router.get("/", response_model=list[Alert])
+@router.get(
+    "/",
+    response_model=list[Alert],
+    dependencies=[Depends(_require_alerts_api_key)],
+)
 async def list_all_alerts() -> list[Alert]:
     return list(_ALERTS.values())
 
@@ -183,6 +188,7 @@ async def list_all_alerts() -> list[Alert]:
     "/{alert_id}/ack",
     response_model=Alert,
     summary="Mark an alert as acknowledged.",
+    dependencies=[Depends(_require_alerts_api_key)],
 )
 async def acknowledge_alert(alert_id: str) -> Alert:
     alert = _ALERTS.get(alert_id)

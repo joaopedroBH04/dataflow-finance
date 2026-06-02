@@ -23,7 +23,7 @@ _HTML_TAG_RE = re.compile(r"<[^>]+>")
 _VALID_REVENUE_BRACKETS = {"50k-100k", "100k-250k", "250k-500k", "500k+"}
 _ALLOWED_SYSTEM_IDS = {"ifood", "rappi", "pdv", "stone", "cielo", "excel"}
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Security, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, Security, status
 from fastapi.security import APIKeyHeader
 from loguru import logger
 from pydantic import BaseModel, EmailStr, Field, field_validator
@@ -261,3 +261,78 @@ async def count_leads() -> dict:
         return {"count": 0}
     count = sum(1 for line in leads_file.open("r", encoding="utf-8") if line.strip())
     return {"count": count}
+
+
+@router.get(
+    "/{lead_id}",
+    response_model=dict,
+    summary="Retrieve a single lead by ID.",
+    dependencies=[Depends(_require_leads_api_key)],
+)
+async def get_lead(lead_id: str) -> dict:
+    """Returns the full lead record for the given ID, or 404 if not found."""
+    leads_file = _get_leads_file()
+    if not leads_file.exists():
+        raise HTTPException(status_code=404, detail=f"Lead '{lead_id}' not found.")
+
+    with open(leads_file, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            stripped = raw_line.strip()
+            if not stripped:
+                continue
+            try:
+                record = json.loads(stripped)
+            except json.JSONDecodeError:
+                continue
+            if record.get("id") == lead_id:
+                return record
+
+    raise HTTPException(status_code=404, detail=f"Lead '{lead_id}' not found.")
+
+
+@router.delete(
+    "/{lead_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    summary="Permanently delete a lead record (LGPD Art. 18 — right to erasure).",
+    dependencies=[Depends(_require_leads_api_key)],
+)
+async def delete_lead(lead_id: str) -> Response:
+    """
+    Rewrites the JSONL store omitting the record with the given ID.
+    Required for LGPD compliance — honors data-subject erasure requests.
+    Returns 404 if the lead ID does not exist.
+    """
+    leads_file = _get_leads_file()
+    if not leads_file.exists():
+        raise HTTPException(status_code=404, detail=f"Lead '{lead_id}' not found.")
+
+    found = False
+    kept_lines: list[str] = []
+    with open(leads_file, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            stripped = raw_line.strip()
+            if not stripped:
+                continue
+            try:
+                record = json.loads(stripped)
+            except json.JSONDecodeError:
+                kept_lines.append(raw_line)
+                continue
+            if record.get("id") == lead_id:
+                found = True
+            else:
+                kept_lines.append(raw_line)
+
+    if not found:
+        raise HTTPException(status_code=404, detail=f"Lead '{lead_id}' not found.")
+
+    try:
+        with open(leads_file, "w", encoding="utf-8") as f:
+            f.writelines(kept_lines)
+    except OSError as exc:
+        logger.error("[Leads] LGPD erasure failed for id={id}: {exc}", id=lead_id, exc=str(exc))
+        raise HTTPException(status_code=500, detail="Não foi possível apagar o registro. Tente novamente.") from exc
+
+    logger.success("[Leads] LGPD erasure — lead permanently deleted: id={id}", id=lead_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
