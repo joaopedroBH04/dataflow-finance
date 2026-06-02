@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020817" />
   <title>DataFlow Finance | Automação Financeira para Restaurantes</title>
   <meta name="description" content="Infraestrutura ETL dedicada que integra PDV, iFood e adquirentes em um único pipeline automatizado. Elimine furos de caixa e recupere horas perdidas em conciliação manual." />
 
@@ -51,6 +52,7 @@
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <script>
@@ -980,6 +982,52 @@
             }
           }
         ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://dataflowfinance.com.br/#website",
+        "url": "https://dataflowfinance.com.br",
+        "name": "DataFlow Finance",
+        "description": "Automação financeira e ETL dedicado para restaurantes e food service no Brasil",
+        "publisher": { "@id": "https://dataflowfinance.com.br/#organization" },
+        "inLanguage": "pt-BR",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://dataflowfinance.com.br/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://dataflowfinance.com.br/#local",
+        "name": "DataFlow Finance",
+        "url": "https://dataflowfinance.com.br",
+        "image": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80",
+        "telephone": "+5531999999999",
+        "priceRange": "R$3.500–R$15.000",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Belo Horizonte",
+          "addressRegion": "MG",
+          "addressCountry": "BR"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -19.9167,
+          "longitude": -43.9345
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        "areaServed": { "@type": "Country", "name": "Brasil" },
+        "sameAs": ["https://wa.me/5531999999999"],
+        "parentOrganization": { "@id": "https://dataflowfinance.com.br/#organization" }
       }
     ]
   }
