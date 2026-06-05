@@ -823,6 +823,40 @@
     .roi-slider:focus-visible,
     .whatsapp-float:focus-visible,
     #scroll-top:focus-visible { outline: none; }
+
+    /* --- Card hover shine sweep (diagonal light glide) --- */
+    .card-border { position: relative; }
+    .card-border::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        110deg,
+        transparent 0%, transparent 35%,
+        rgba(255,255,255,0.042) 50%,
+        transparent 65%, transparent 100%
+      );
+      background-size: 280% 100%;
+      background-position: -100% 0;
+      pointer-events: none;
+      z-index: 1;
+      transition: background-position 0.68s ease;
+      border-radius: inherit;
+    }
+    .card-border:hover::after { background-position: 200% 0; }
+
+    /* --- Staggered grid reveal --- */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal-stagger > * {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity 0.55s ease, transform 0.55s ease;
+      }
+      .reveal-stagger > *.animated {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 
   <!-- JSON-LD Structured Data — Organization + Service (schema.org) -->
@@ -1340,7 +1374,7 @@
         </div>
 
         <!-- Stats Row -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto reveal">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto reveal-stagger">
           <div class="stat-card bg-navy-800/60 rounded-xl p-5 text-left">
             <p class="text-3xl font-black text-red-400"><span data-count="40" data-suffix="h+">40h+</span></p>
             <p class="text-xs text-slate-500 mt-1 font-medium">Horas mensais perdidas em conciliação manual</p>
@@ -1455,7 +1489,7 @@
       </div>
 
       <!-- Pain Points Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 reveal">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 reveal-stagger">
 
         <!-- Pain 1 -->
         <div class="card-border-red rounded-2xl p-6">
@@ -2556,7 +2590,7 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 reveal">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 reveal-stagger">
 
         <!-- Starter -->
         <div class="pricing-card tilt-card card-border rounded-2xl p-8">
@@ -4622,6 +4656,23 @@
         card.setAttribute('title', msg);
         card.style.cursor = 'help';
       });
+    })();
+
+    // ==================================================================
+    // STAGGERED GRID REVEAL  —  .reveal-stagger containers cascade children in
+    // ==================================================================
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          [...e.target.children].forEach((child, i) => {
+            setTimeout(() => child.classList.add('animated'), i * 110);
+          });
+          io.unobserve(e.target);
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal-stagger').forEach(el => io.observe(el));
     })();
 
     // ==================================================================
