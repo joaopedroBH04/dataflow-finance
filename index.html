@@ -1082,7 +1082,7 @@
   <div id="cursor-spotlight" aria-hidden="true"></div>
 
   <!-- WhatsApp help bubble -->
-  <a id="wa-bubble" href="https://wa.me/5531999999999?text=Ol%C3%A1!%20Estava%20no%20site%20e%20tenho%20d%C3%BAvidas." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <a id="wa-bubble" href="https://wa.me/5531999999999?text=Ol%C3%A1!%20Estava%20no%20site%20e%20tenho%20d%C3%BAvidas." target="_blank" rel="noopener" aria-label="Falar no WhatsApp" aria-hidden="true" tabindex="-1">
     Posso te ajudar? 👋
   </a>
 
@@ -1100,8 +1100,8 @@
   </nav>
 
   <!-- ROI sticky share badge -->
-  <div id="roi-badge" aria-live="polite" aria-label="Resumo do seu ROI calculado">
-    <button id="roi-badge-close" onclick="document.getElementById('roi-badge').classList.remove('show')" aria-label="Fechar">✕</button>
+  <div id="roi-badge" aria-live="polite" aria-label="Resumo do seu ROI calculado" aria-hidden="true">
+    <button id="roi-badge-close" onclick="const b=document.getElementById('roi-badge');b.classList.remove('show');b.setAttribute('aria-hidden','true');" aria-label="Fechar">✕</button>
     <p class="text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wide">Seu ROI estimado</p>
     <p id="roi-badge-val" class="text-2xl font-black gradient-text mb-1">R$ —</p>
     <p class="text-xs text-slate-500 mb-3">recuperados por ano com pipeline dedicado</p>
@@ -2326,17 +2326,18 @@
 
       <!-- Comparison Table -->
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm" aria-label="Comparação entre sistemas genéricos e DataFlow Finance">
+          <caption class="sr-only">Comparação de funcionalidades: Sistemas Genéricos (ERPs, SaaS de prateleira) versus DataFlow Finance (infraestrutura ETL dedicada)</caption>
           <thead>
             <tr>
-              <th class="text-left py-4 px-6 text-slate-500 font-semibold w-2/5"></th>
-              <th class="py-4 px-6 text-center w-[30%]">
+              <th scope="col" class="text-left py-4 px-6 text-slate-500 font-semibold w-2/5">Funcionalidade</th>
+              <th scope="col" class="py-4 px-6 text-center w-[30%]">
                 <div class="inline-block bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2">
                   <p class="text-red-400 font-bold text-sm">Sistemas Genéricos</p>
                   <p class="text-red-400/60 text-xs">ERPs, SaaS de prateleira</p>
                 </div>
               </th>
-              <th class="py-4 px-6 text-center w-[30%]">
+              <th scope="col" class="py-4 px-6 text-center w-[30%]">
                 <div class="inline-block bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-2 glow-emerald">
                   <p class="text-emerald-400 font-bold text-sm">DataFlow Finance</p>
                   <p class="text-emerald-400/60 text-xs">Infraestrutura dedicada</p>
@@ -2801,8 +2802,8 @@
         </div>
       </div>
 
-      <!-- Infinite marquee strip -->
-      <div class="mt-12 space-y-3">
+      <!-- Infinite marquee strip (decorative duplicate; grid above is the accessible list) -->
+      <div class="mt-12 space-y-3" aria-hidden="true">
         <div class="marquee-wrap">
           <div class="marquee-track">
             <div class="marquee-item"><span class="text-xl">🛵</span><span class="text-xs text-slate-400 font-semibold">iFood</span></div>
@@ -4463,12 +4464,20 @@
         const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
         if (pct < 0.85) {
           bubble.classList.add('show');
-          setTimeout(() => bubble.classList.remove('show'), 12000);
+          bubble.removeAttribute('aria-hidden');
+          bubble.removeAttribute('tabindex');
+          setTimeout(() => {
+            bubble.classList.remove('show');
+            bubble.setAttribute('aria-hidden', 'true');
+            bubble.setAttribute('tabindex', '-1');
+          }, 12000);
         }
       }, 45000);
       bubble.addEventListener('click', () => {
         sessionStorage.setItem('wa_bubble_dismissed', '1');
         bubble.classList.remove('show');
+        bubble.setAttribute('aria-hidden', 'true');
+        bubble.setAttribute('tabindex', '-1');
       });
     })();
 
@@ -4546,6 +4555,7 @@
             const annualEl = document.querySelector('[x-text="formatBRL(annualSavings)"]');
             if (annualEl) badgeVal.textContent = annualEl.textContent;
             badge.classList.add('show');
+          badge.removeAttribute('aria-hidden');
           }, 1200);
         });
         slider.addEventListener('change', () => {
