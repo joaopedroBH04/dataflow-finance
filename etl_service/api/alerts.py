@@ -103,7 +103,7 @@ async def _require_alerts_api_key(
     api_key: Optional[str] = Security(_api_key_header),
 ) -> None:
     """Guards alert management endpoints with an API key (skipped when key is unset)."""
-    configured = settings.leads_api_key
+    configured = settings.alerts_api_key or settings.leads_api_key
     if not configured:
         return  # Auth disabled — dev/local environment
     if api_key != configured:

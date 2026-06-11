@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import glob
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -107,7 +107,7 @@ def _as_period_metrics(artefact: dict) -> PeriodMetrics:
         net_margin_pct=margin,
         gaps_count=int(artefact.get("gaps_detected", 0) or 0),
         gaps_value_brl=gaps_value,
-        generated_at=artefact.get("generated_at", datetime.now().isoformat()),
+        generated_at=artefact.get("generated_at", datetime.now(timezone.utc).isoformat()),
     )
 
 

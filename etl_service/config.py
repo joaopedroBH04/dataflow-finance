@@ -112,6 +112,14 @@ class Settings(BaseSettings):
         ),
     )
 
+    alerts_api_key: str = Field(
+        default="",
+        description=(
+            "API key required for alert management endpoints (POST/GET /alerts). "
+            "Falls back to leads_api_key when empty, enabling separate rotation in production."
+        ),
+    )
+
 
 # Singleton instance — import this throughout the codebase.
 settings = Settings()

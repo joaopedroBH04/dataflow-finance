@@ -21,7 +21,9 @@ from __future__ import annotations
 
 import time
 import uuid
+from collections import defaultdict, deque
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import AsyncGenerator
 
@@ -41,6 +43,43 @@ from etl_service.extractors.stone_cielo import AcquirerExtractor
 from etl_service.loaders.report import ReportLoader
 from etl_service.transformers.financial import FinancialTransformer
 from etl_service.validators.schemas import ETLRequest, ETLResponse, GapSummary
+
+
+# ====================================================================== #
+# ETL endpoint rate limiter (sliding window, in-memory)
+# ETL is compute-heavy — allow 3 runs per IP per 60-second window.
+# ====================================================================== #
+
+_ETL_RATE_WINDOW_SECONDS = 60
+_ETL_RATE_MAX_REQUESTS = 3
+_etl_rate_store: dict[str, deque] = defaultdict(deque)
+
+
+def _etl_resolve_client_ip(request: Request) -> str:
+    xff = request.headers.get("X-Forwarded-For")
+    if xff:
+        return xff.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def _check_etl_rate_limit(client_ip: str) -> None:
+    """Raises HTTP 429 if the IP exceeds _ETL_RATE_MAX_REQUESTS in the sliding window."""
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(seconds=_ETL_RATE_WINDOW_SECONDS)
+    timestamps = _etl_rate_store[client_ip]
+    while timestamps and timestamps[0] < cutoff:
+        timestamps.popleft()
+    if len(timestamps) >= _ETL_RATE_MAX_REQUESTS:
+        logger.warning(
+            "[ETL] Rate limit exceeded — ip={ip}, {n} requests in {w}s window",
+            ip=client_ip, n=len(timestamps), w=_ETL_RATE_WINDOW_SECONDS,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Too many ETL requests. Maximum {_ETL_RATE_MAX_REQUESTS} per {_ETL_RATE_WINDOW_SECONDS}s. Please wait before retrying.",
+            headers={"Retry-After": str(_ETL_RATE_WINDOW_SECONDS)},
+        )
+    timestamps.append(now)
 
 
 # ====================================================================== #
@@ -249,7 +288,7 @@ async def readiness_check() -> JSONResponse:
         "JSON summary with revenue, fees, detected gaps, and the output file path."
     ),
 )
-async def run_etl(payload: ETLRequest) -> ETLResponse:
+async def run_etl(payload: ETLRequest, request: Request) -> ETLResponse:
     """
     Full ETL pipeline execution endpoint.
 
@@ -265,6 +304,7 @@ async def run_etl(payload: ETLRequest) -> ETLResponse:
     -------
     ETLResponse with execution summary.
     """
+    _check_etl_rate_limit(_etl_resolve_client_ip(request))
     start_time = time.perf_counter()
 
     logger.info(
