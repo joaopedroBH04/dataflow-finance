@@ -857,6 +857,40 @@
         transform: translateY(0);
       }
     }
+
+    /* --- CTA pulse ring — expanding concentric rings on primary action buttons --- */
+    .cta-pulse { position: relative; isolation: isolate; }
+    @media (prefers-reduced-motion: no-preference) {
+      .cta-pulse::before,
+      .cta-pulse::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: inherit;
+        border: 2px solid rgba(16, 185, 129, 0.65);
+        opacity: 0;
+        pointer-events: none;
+        z-index: -1;
+        animation: ctaPulseRing 2.7s ease-out infinite;
+      }
+      .cta-pulse::after { animation-delay: 1.35s; }
+      @keyframes ctaPulseRing {
+        0%   { transform: scale(0.96); opacity: 0.8; }
+        72%  { transform: scale(1.11); opacity: 0; }
+        100% { transform: scale(1.11); opacity: 0; }
+      }
+    }
+
+    /* --- Testimonial star shimmer on card hover --- */
+    @keyframes starShimmer {
+      0%, 100% { filter: brightness(1)   drop-shadow(0 0 0px  rgba(245,158,11,0));   }
+      50%       { filter: brightness(1.5) drop-shadow(0 0 10px rgba(245,158,11,0.75)); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .testimonial-card:hover .stars {
+        animation: starShimmer 1.9s ease-in-out infinite;
+      }
+    }
   </style>
 
   <!-- JSON-LD Structured Data — Organization + Service (schema.org) -->
@@ -1342,7 +1376,7 @@
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <a href="#auditoria"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-base transition-all duration-200 glow-emerald">
+            class="cta-pulse w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-base transition-all duration-200 glow-emerald">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -2643,7 +2677,7 @@
             <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> <strong class="text-white">90 dias de suporte</strong></li>
             <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> 2h/mês de ajustes inclusos</li>
           </ul>
-          <a href="#auditoria" class="block text-center w-full px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-sm transition-all glow-emerald">Quero o Professional</a>
+          <a href="#auditoria" class="cta-pulse block text-center w-full px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-sm transition-all glow-emerald">Quero o Professional</a>
         </div>
 
         <!-- Enterprise -->
@@ -4005,13 +4039,16 @@
         const target = parseInt(el.dataset.count, 10);
         const suffix = el.dataset.suffix || '';
         const fmt    = el.dataset.format  || '';
-        const dur    = 1600;
+        const dur    = 1900;
         const start  = performance.now();
         function step(now) {
-          const eased  = 1 - Math.pow(1 - Math.min((now - start) / dur, 1), 3);
-          const current = Math.round(eased * target);
+          const t = Math.min((now - start) / dur, 1);
+          // Cubic ease-out with a 7% spring overshoot that settles at 1.0
+          const eased = t === 1 ? 1 : (1 - Math.pow(1 - t, 3)) + Math.sin(t * Math.PI) * 0.07 * (1 - t);
+          const current = Math.round(Math.min(eased, 1) * target);
           el.textContent = (fmt === 'thousands' ? current.toLocaleString('pt-BR') : current) + suffix;
-          if (eased < 1) requestAnimationFrame(step);
+          if (t < 1) requestAnimationFrame(step);
+          else el.textContent = (fmt === 'thousands' ? target.toLocaleString('pt-BR') : target) + suffix;
         }
         requestAnimationFrame(step);
       }
