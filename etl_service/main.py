@@ -183,6 +183,8 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
     # Prevent proxies and browsers from caching sensitive API responses.
     response.headers["Cache-Control"] = "no-store"
+    # Strict CSP — this is a pure JSON API, so no sources should be trusted.
+    response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
     return response
 
 

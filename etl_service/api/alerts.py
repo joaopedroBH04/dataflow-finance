@@ -244,10 +244,19 @@ async def _post_to_subscriber(
 ) -> None:
     try:
         response = await client.post(str(sub.webhook_url), json=payload)
-        logger.info(
-            "[Alerts] Dispatched to {ch} ({status}) — alert={id}",
-            ch=sub.channel, status=response.status_code, id=alert_id,
-        )
+        if response.is_success:
+            logger.info(
+                "[Alerts] Dispatched to {ch} ({status}) — alert={id}",
+                ch=sub.channel, status=response.status_code, id=alert_id,
+            )
+        else:
+            logger.warning(
+                "[Alerts] Delivery rejected by {ch} — status={status}, alert={id}, body={body}",
+                ch=sub.channel,
+                status=response.status_code,
+                id=alert_id,
+                body=response.text[:200],
+            )
     except httpx.HTTPError as exc:
         logger.error(
             "[Alerts] Dispatch FAILED to {url}: {exc}",

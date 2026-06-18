@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import glob
 import json
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Optional
@@ -70,10 +71,24 @@ class DashboardResponse(BaseModel):
 router = APIRouter(prefix="/metrics", tags=["Metrics"])
 
 
+_DRE_CACHE: tuple[float, list[dict]] | None = None
+_DRE_CACHE_TTL = 30.0  # seconds — re-read disk at most once every 30s
+
+
 def _read_all_dre_artefacts() -> list[dict]:
-    """Reads every `*_dre.json` file in the output directory, sorted by date."""
+    """Reads every `*_dre.json` file in the output directory, sorted by date.
+
+    Results are cached in-memory for _DRE_CACHE_TTL seconds to avoid
+    hammering disk on every dashboard / period request.
+    """
+    global _DRE_CACHE
+    now = time.monotonic()
+    if _DRE_CACHE is not None and (now - _DRE_CACHE[0]) < _DRE_CACHE_TTL:
+        return _DRE_CACHE[1]
+
     output_dir = Path(settings.output_dir)
     if not output_dir.exists():
+        _DRE_CACHE = (now, [])
         return []
 
     pattern = str(output_dir / "*_dre.json")
@@ -85,6 +100,8 @@ def _read_all_dre_artefacts() -> list[dict]:
                 artefacts.append(json.load(fh))
         except (json.JSONDecodeError, OSError) as exc:
             logger.warning("[Metrics] Could not read '{f}': {exc}", f=f, exc=exc)
+
+    _DRE_CACHE = (now, artefacts)
     return artefacts
 
 
