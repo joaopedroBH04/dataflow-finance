@@ -447,6 +447,14 @@
     summary { list-style: none; cursor: pointer; }
     summary::-webkit-details-marker { display: none; }
 
+    /* --- FAQ smooth grid accordion --- */
+    .faq-content-wrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.34s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .faq-content-inner { overflow: hidden; min-height: 0; }
+
     /* --- Integration logo --- */
     .integration-logo {
       filter: grayscale(1) opacity(0.5);
@@ -4758,6 +4766,60 @@
       document.querySelectorAll('a, button').forEach(function (el) {
         el.querySelectorAll('svg:not([aria-label]):not([role="img"])').forEach(function (svg) {
           svg.setAttribute('aria-hidden', 'true');
+        });
+      });
+    })();
+
+    // ==================================================================
+    // FAQ SMOOTH ACCORDION — animated open/close via CSS grid-template-rows
+    // ==================================================================
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.querySelectorAll('.faq-item').forEach(details => {
+        const summary = details.querySelector('summary');
+        const content = details.querySelector(':scope > div');
+        if (!summary || !content) return;
+
+        const wrap  = document.createElement('div');
+        wrap.className = 'faq-content-wrap';
+        const inner = document.createElement('div');
+        inner.className = 'faq-content-inner';
+        content.parentNode.insertBefore(wrap, content);
+        wrap.appendChild(inner);
+        inner.appendChild(content);
+
+        summary.addEventListener('click', e => {
+          e.preventDefault();
+          if (details.open) {
+            wrap.style.gridTemplateRows = '0fr';
+            wrap.addEventListener('transitionend', () => details.removeAttribute('open'), { once: true });
+          } else {
+            details.setAttribute('open', '');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              wrap.style.gridTemplateRows = '1fr';
+            }));
+          }
+        });
+      });
+    })();
+
+    // ==================================================================
+    // MAGNETIC CTA BUTTONS — subtle cursor attraction on primary actions
+    // ==================================================================
+    (function () {
+      if (window.matchMedia('(pointer: coarse)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.querySelectorAll('.cta-pulse').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+          const r = btn.getBoundingClientRect();
+          const x = ((e.clientX - r.left) / r.width  - 0.5) * 10;
+          const y = ((e.clientY - r.top)  / r.height - 0.5) * 7;
+          btn.style.transform = `translate(${x}px, ${y}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transition = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          btn.style.transform  = '';
+          setTimeout(() => { btn.style.transition = ''; }, 560);
         });
       });
     })();
