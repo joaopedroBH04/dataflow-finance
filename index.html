@@ -3272,22 +3272,29 @@
             <label for="field-revenue" class="block text-sm font-semibold text-slate-300 mb-1.5">
               Faturamento mensal estimado <span class="text-red-400" aria-hidden="true">*</span>
             </label>
-            <select
-              id="field-revenue"
-              x-model="fields.revenue"
-              @blur="touch('revenue')"
-              :class="{ 'form-input-error': errors.revenue && touched.revenue }"
-              :aria-invalid="errors.revenue && touched.revenue ? 'true' : 'false'"
-              aria-required="true"
-              aria-describedby="field-revenue-error"
-              class="form-input w-full px-4 py-3 rounded-xl text-sm appearance-none cursor-pointer"
-            >
-              <option value="" disabled selected>Selecione a faixa de faturamento</option>
-              <option value="50k-100k">R$ 50.000 – R$ 100.000/mês</option>
-              <option value="100k-250k">R$ 100.000 – R$ 250.000/mês</option>
-              <option value="250k-500k">R$ 250.000 – R$ 500.000/mês</option>
-              <option value="500k+">Acima de R$ 500.000/mês</option>
-            </select>
+            <div class="relative">
+              <select
+                id="field-revenue"
+                x-model="fields.revenue"
+                @blur="touch('revenue')"
+                :class="{ 'form-input-error': errors.revenue && touched.revenue }"
+                :aria-invalid="errors.revenue && touched.revenue ? 'true' : 'false'"
+                aria-required="true"
+                aria-describedby="field-revenue-error"
+                class="form-input w-full px-4 py-3 pr-10 rounded-xl text-sm appearance-none cursor-pointer"
+              >
+                <option value="" disabled selected>Selecione a faixa de faturamento</option>
+                <option value="50k-100k">R$ 50.000 – R$ 100.000/mês</option>
+                <option value="100k-250k">R$ 100.000 – R$ 250.000/mês</option>
+                <option value="250k-500k">R$ 250.000 – R$ 500.000/mês</option>
+                <option value="500k+">Acima de R$ 500.000/mês</option>
+              </select>
+              <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center" aria-hidden="true">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </span>
+            </div>
             <p id="field-revenue-error" x-show="errors.revenue && touched.revenue" x-text="errors.revenue" class="mt-1.5 text-xs text-red-400" role="alert"></p>
           </div>
 
@@ -3641,7 +3648,7 @@
   </section>
 
   <!-- Sticky mobile CTA -->
-  <div id="mobile-sticky-cta">
+  <div id="mobile-sticky-cta" role="region" aria-label="Ações rápidas — auditoria e contato">
     <a href="#auditoria"
       class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-sm transition-all glow-emerald">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4256,7 +4263,24 @@
         document.getElementById('exit-modal').classList.remove('open');
         if (_exitFocusOrigin) { _exitFocusOrigin.focus(); _exitFocusOrigin = null; }
       };
-      document.addEventListener('keydown', e => { if (e.key === 'Escape') window.closeExitModal(); });
+
+      // Focus trap: while modal is open, Tab cycles only within it (WCAG 2.1.2)
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { window.closeExitModal(); return; }
+        const modal = document.getElementById('exit-modal');
+        if (!modal.classList.contains('open') || e.key !== 'Tab') return;
+        const focusable = Array.from(
+          modal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+        ).filter(el => el.offsetParent !== null);
+        if (!focusable.length) { e.preventDefault(); return; }
+        const first = focusable[0];
+        const last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+        }
+      });
       document.addEventListener('mouseleave', e => {
         if (e.clientY > 20 || shown) return;
         shown = true; sessionStorage.setItem('exit_shown', '1');
