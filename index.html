@@ -1816,7 +1816,7 @@
   <!-- ============================================================
        HOW IT WORKS — 3 Steps
        ============================================================ -->
-  <section class="py-24 bg-navy-900">
+  <section aria-label="Processo de entrega — da assinatura ao pipeline em produção" class="py-24 bg-navy-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <div class="text-center mb-16">
@@ -1879,7 +1879,7 @@
   <!-- ============================================================
        ANTES E DEPOIS — Transformação visual
        ============================================================ -->
-  <section class="py-24 bg-navy-900">
+  <section aria-label="Transformação — antes e depois do pipeline DataFlow" class="py-24 bg-navy-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <div class="text-center mb-16">
@@ -2747,7 +2747,7 @@
   <!-- ============================================================
        INTEGRAÇÕES SUPORTADAS
        ============================================================ -->
-  <section class="py-20 bg-navy-900">
+  <section aria-label="Integrações — plataformas e sistemas suportados nativamente" class="py-20 bg-navy-900">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <div class="text-center mb-12">
@@ -2919,7 +2919,7 @@
   <!-- ============================================================
        DASHBOARD MOCKUP — Preview executivo
        ============================================================ -->
-  <section class="py-24 bg-navy-950">
+  <section aria-label="Dashboard executivo — visualização do pipeline em tempo real" class="py-24 bg-navy-950">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
@@ -3039,7 +3039,7 @@
   <!-- ============================================================
        DEPOIMENTOS — Social proof completo com estrelas
        ============================================================ -->
-  <section class="py-24 bg-navy-950">
+  <section aria-label="Depoimentos — resultados reais de clientes DataFlow Finance" class="py-24 bg-navy-950">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <div class="text-center mb-14">
@@ -4812,13 +4812,18 @@
         wrap.appendChild(inner);
         inner.appendChild(content);
 
+        // Expose initial state to AT (WCAG 4.1.2 — e.preventDefault blocks native ARIA update)
+        summary.setAttribute('aria-expanded', String(details.open));
+
         summary.addEventListener('click', e => {
           e.preventDefault();
           if (details.open) {
+            summary.setAttribute('aria-expanded', 'false');
             wrap.style.gridTemplateRows = '0fr';
             wrap.addEventListener('transitionend', () => details.removeAttribute('open'), { once: true });
           } else {
             details.setAttribute('open', '');
+            summary.setAttribute('aria-expanded', 'true');
             requestAnimationFrame(() => requestAnimationFrame(() => {
               wrap.style.gridTemplateRows = '1fr';
             }));
