@@ -14,12 +14,14 @@
   <meta property="og:type"        content="website" />
   <meta property="og:title"       content="DataFlow Finance | Automação Financeira para Restaurantes" />
   <meta property="og:description" content="Pipeline ETL dedicado que integra PDV, iFood e adquirentes. Elimine furos de caixa e recupere horas perdidas em conciliação manual." />
-  <meta property="og:image"       content="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80" />
+  <meta property="og:image"       content="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80&auto=format" />
   <meta property="og:url"         content="https://dataflowfinance.com.br" />
   <meta name="twitter:card"       content="summary_large_image" />
   <meta name="twitter:title"      content="DataFlow Finance | Automação Financeira para Restaurantes" />
   <meta name="twitter:description" content="Pipeline ETL dedicado que integra PDV, iFood e adquirentes. Elimine furos de caixa e recupere horas perdidas em conciliação manual." />
-  <meta name="twitter:image"      content="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80" />
+  <meta name="twitter:image"      content="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80&auto=format" />
+  <meta property="og:locale"      content="pt_BR" />
+  <meta property="og:site_name"   content="DataFlow Finance" />
 
   <!-- SEO: Canonical & Indexing -->
   <link rel="canonical" href="https://dataflowfinance.com.br" />
@@ -42,11 +44,15 @@
   <!-- Performance: DNS prefetch for external image host -->
   <link rel="dns-prefetch" href="https://images.unsplash.com" />
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+  <!-- Performance: preconnect for CDN scripts (saves ~150-300ms TCP handshake) -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Alpine.js CDN -->
+  <!-- Alpine.js CDN — preload fetches it at high priority; defer keeps execution order correct -->
+  <link rel="preload" as="script" href="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js" crossorigin />
   <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
 
   <!-- Google Fonts: Inter -->
@@ -1097,7 +1103,7 @@
         "@id": "https://dataflowfinance.com.br/#local",
         "name": "DataFlow Finance",
         "url": "https://dataflowfinance.com.br",
-        "image": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80",
+        "image": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop&q=80&auto=format",
         "telephone": "+5531999999999",
         "priceRange": "R$3.500–R$15.000",
         "address": {
@@ -2122,7 +2128,7 @@
 
         <!-- Team Member 1 -->
         <div class="card-border rounded-2xl p-6 text-center">
-          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop')"></div>
+          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&auto=format')"></div>
           <h4 class="text-white font-bold text-lg">João Pedro Costa</h4>
           <p class="text-emerald-400 text-sm font-semibold mb-3">Staff Data Engineer · Founder</p>
           <p class="text-slate-400 text-xs leading-relaxed">
@@ -2137,7 +2143,7 @@
 
         <!-- Team Member 2 -->
         <div class="card-border rounded-2xl p-6 text-center">
-          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop')"></div>
+          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&auto=format')"></div>
           <h4 class="text-white font-bold text-lg">Marina Lopes</h4>
           <p class="text-emerald-400 text-sm font-semibold mb-3">Senior Backend Engineer</p>
           <p class="text-slate-400 text-xs leading-relaxed">
@@ -2152,7 +2158,7 @@
 
         <!-- Team Member 3 -->
         <div class="card-border rounded-2xl p-6 text-center">
-          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop')"></div>
+          <div class="team-avatar mx-auto mb-4" data-bg-lazy="url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&auto=format')"></div>
           <h4 class="text-white font-bold text-lg">Rafael Siqueira</h4>
           <p class="text-emerald-400 text-sm font-semibold mb-3">Financial Analyst · MBA FGV</p>
           <p class="text-slate-400 text-xs leading-relaxed">
@@ -2192,7 +2198,7 @@
 
         <!-- Case 1 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop&auto=format')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">4 UNIDADES · BH</span>
             </div>
@@ -2231,7 +2237,7 @@
 
         <!-- Case 2 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=500&fit=crop&auto=format')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">HAMBURGUERIA · SP</span>
             </div>
@@ -2270,7 +2276,7 @@
 
         <!-- Case 3 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop&auto=format')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">ENTERPRISE · 8 UNIDADES</span>
             </div>
@@ -2309,7 +2315,7 @@
 
         <!-- Case 4 -->
         <div class="case-card tilt-card card-border rounded-2xl">
-          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=500&fit=crop')">
+          <div class="case-image" data-bg-lazy="url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=500&fit=crop&auto=format')">
             <div class="absolute top-4 left-4 z-10">
               <span class="bg-emerald-500 text-navy-950 text-xs font-bold px-3 py-1 rounded-full">JAPONESA PREMIUM · 2 UNIDADES</span>
             </div>
@@ -4449,24 +4455,6 @@
       const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
       const span = badge.querySelector('span:last-child');
       if (span) span.textContent = greeting + ' · ' + span.textContent;
-    })();
-
-    // ==================================================================
-    // LAZY LOADING FOR CASE STUDY IMAGES
-    // ==================================================================
-    (function () {
-      document.querySelectorAll('.case-image[style*="background-image"]').forEach(el => {
-        const url = el.style.backgroundImage.match(/url\(['"]?(.*?)['"]?\)/)?.[1];
-        if (!url) return;
-        el.style.backgroundImage = 'none';
-        el.dataset.bg = url;
-        const obs = new IntersectionObserver(entries => {
-          if (!entries[0].isIntersecting) return;
-          el.style.backgroundImage = 'url(' + url + ')';
-          obs.disconnect();
-        }, { rootMargin: '200px' });
-        obs.observe(el);
-      });
     })();
 
     // ==================================================================
