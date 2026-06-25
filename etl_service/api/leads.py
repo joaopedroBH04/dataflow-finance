@@ -220,15 +220,30 @@ async def create_lead(lead: LeadSubmission, request: Request) -> LeadResponse:
 async def list_leads(
     skip: int = Query(0, ge=0, description="Number of leads to skip (offset)."),
     limit: int = Query(100, ge=1, le=1000, description="Maximum leads to return per page."),
+    from_date: Optional[datetime] = Query(
+        None,
+        description="Return only leads received on or after this datetime (ISO 8601, e.g. 2026-06-01T00:00:00Z).",
+    ),
+    to_date: Optional[datetime] = Query(
+        None,
+        description="Return only leads received on or before this datetime (ISO 8601).",
+    ),
     _: None = Depends(_require_leads_api_key),
 ) -> list[dict]:
-    """Returns a paginated slice of leads. Use ?skip=N&limit=M to page through results."""
+    """Returns a paginated slice of leads, optionally filtered by received_at date range.
+    Use ?from_date=&to_date= to narrow results; ?skip=N&limit=M to page through them."""
     leads_file = _get_leads_file()
     if not leads_file.exists():
         return []
 
+    def _as_utc(dt: datetime) -> datetime:
+        return dt if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)
+
+    from_utc = _as_utc(from_date) if from_date is not None else None
+    to_utc = _as_utc(to_date) if to_date is not None else None
+
     leads: list[dict] = []
-    valid_idx = 0
+    filtered_idx = 0
     with open(leads_file, "r", encoding="utf-8") as f:
         for raw_line in f:
             raw_line = raw_line.strip()
@@ -239,11 +254,20 @@ async def list_leads(
             except json.JSONDecodeError:
                 logger.warning("[Leads] Skipping malformed JSONL line.")
                 continue
-            if valid_idx < skip:
-                valid_idx += 1
+            if from_utc is not None or to_utc is not None:
+                try:
+                    received_dt = _as_utc(datetime.fromisoformat(record.get("received_at", "")))
+                    if from_utc is not None and received_dt < from_utc:
+                        continue
+                    if to_utc is not None and received_dt > to_utc:
+                        continue
+                except (ValueError, TypeError):
+                    pass  # unparseable timestamp — include the record conservatively
+            if filtered_idx < skip:
+                filtered_idx += 1
                 continue
             leads.append(record)
-            valid_idx += 1
+            filtered_idx += 1
             if len(leads) >= limit:
                 break
     return leads

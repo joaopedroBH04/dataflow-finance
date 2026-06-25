@@ -184,6 +184,20 @@ async def list_all_alerts() -> list[Alert]:
     return list(_ALERTS.values())
 
 
+@router.get(
+    "/{alert_id}",
+    response_model=Alert,
+    summary="Retrieve a single alert by ID.",
+    dependencies=[Depends(_require_alerts_api_key)],
+)
+async def get_alert(alert_id: str) -> Alert:
+    """Returns the full alert record for the given ID, or 404 if not found."""
+    alert = _ALERTS.get(alert_id)
+    if not alert:
+        raise HTTPException(status_code=404, detail=f"Alert '{alert_id}' not found.")
+    return alert
+
+
 @router.post(
     "/{alert_id}/ack",
     response_model=Alert,

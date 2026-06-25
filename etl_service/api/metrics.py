@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, HTTPException, Path as FPath, Query
+from fastapi import APIRouter, Depends, HTTPException, Path as FPath, Query, Security, status
+from fastapi.security import APIKeyHeader
 from loguru import logger
 from pydantic import BaseModel, Field
 
@@ -69,6 +70,22 @@ class DashboardResponse(BaseModel):
 # ====================================================================== #
 
 router = APIRouter(prefix="/metrics", tags=["Metrics"])
+
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+async def _require_metrics_api_key(
+    api_key: Optional[str] = Security(_api_key_header),
+) -> None:
+    """Guards write operations on the metrics router (reuses the leads API key)."""
+    configured = settings.leads_api_key
+    if not configured:
+        return  # Auth disabled — dev/local environment
+    if api_key != configured:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid or missing X-API-Key header.",
+        )
 
 
 _DRE_CACHE: tuple[float, list[dict]] | None = None
@@ -313,3 +330,31 @@ async def period_gaps(
         p=reference_month, n=len(details), m=min_amount,
     )
     return details
+
+
+# ---------------------------------------------------------------------- #
+# POST /metrics/cache/invalidate
+# ---------------------------------------------------------------------- #
+
+@router.post(
+    "/cache/invalidate",
+    status_code=status.HTTP_200_OK,
+    summary="Force-invalidate the in-memory DRE artefact cache.",
+    dependencies=[Depends(_require_metrics_api_key)],
+)
+async def invalidate_dre_cache() -> dict:
+    """
+    Clears the in-memory DRE artefact cache so the next metrics request
+    re-reads all JSON files from disk immediately.
+
+    Call this from the ETL pipeline after a successful run to ensure
+    /metrics/dashboard reflects the new data without waiting for the
+    30-second TTL to expire.
+    """
+    global _DRE_CACHE
+    _DRE_CACHE = None
+    logger.info("[Metrics] DRE cache manually invalidated.")
+    return {
+        "status": "invalidated",
+        "message": "Cache cleared. The next /metrics request will re-read artefacts from disk.",
+    }
