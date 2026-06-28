@@ -22,6 +22,7 @@ _HTML_TAG_RE = re.compile(r"<[^>]+>")
 
 _VALID_REVENUE_BRACKETS = {"50k-100k", "100k-250k", "250k-500k", "500k+"}
 _ALLOWED_SYSTEM_IDS = {"ifood", "rappi", "pdv", "stone", "cielo", "excel"}
+_VALID_SOURCES = {"landing_page", "whatsapp", "referral", "google_ads", "instagram", "linkedin", "organic", "other"}
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, Security, status
 from fastapi.security import APIKeyHeader
@@ -122,6 +123,13 @@ class LeadSubmission(BaseModel):
         if not v:
             raise ValueError("O consentimento LGPD é obrigatório para processar sua solicitação.")
         return v
+
+    @field_validator("source")
+    @classmethod
+    def validate_source(cls, v: str) -> str:
+        """Restrict acquisition source to known channels; silently normalise unknown values."""
+        normalised = v.lower().strip() if isinstance(v, str) else "other"
+        return normalised if normalised in _VALID_SOURCES else "other"
 
     @field_validator("phone")
     @classmethod
