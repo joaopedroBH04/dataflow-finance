@@ -28,7 +28,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Response, Security, status
 from fastapi.security import APIKeyHeader
 from loguru import logger
-from pydantic import AnyHttpUrl, BaseModel, Field
+from pydantic import AnyHttpUrl, BaseModel, Field, field_validator
 
 from etl_service.config import settings
 
@@ -66,6 +66,16 @@ class SubscriberCreateRequest(BaseModel):
     channel: AlertChannel
     webhook_url: AnyHttpUrl
     severity_filter: AlertSeverity = AlertSeverity.MEDIUM
+
+    @field_validator("webhook_url")
+    @classmethod
+    def require_https(cls, v: AnyHttpUrl) -> AnyHttpUrl:
+        """Reject HTTP webhook URLs — alert payloads contain financial data and must be encrypted."""
+        if str(v).startswith("http://"):
+            raise ValueError(
+                "Webhook URL must use HTTPS. Plain HTTP exposes financial alert payloads to interception."
+            )
+        return v
 
 
 class Alert(BaseModel):

@@ -146,8 +146,10 @@ app = FastAPI(
         "Production-grade ETL microservice that integrates iFood, PDV, and "
         "Stone/Cielo acquirer data into an automated financial DRE with cash-gap detection."
     ),
-    docs_url="/docs",
-    redoc_url="/redoc",
+    # Disable interactive docs in production — schema enumeration aids attackers.
+    # Set DATAFLOW_DEBUG=true locally to re-enable /docs and /redoc.
+    docs_url="/docs" if settings.debug else None,
+    redoc_url="/redoc" if settings.debug else None,
     lifespan=lifespan,
 )
 
