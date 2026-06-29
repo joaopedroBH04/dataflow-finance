@@ -1450,13 +1450,13 @@
       class="mobile-panel lg:hidden absolute top-full left-0 right-0 shadow-2xl"
       style="display:none">
       <div class="px-4 py-5 space-y-1 max-w-7xl mx-auto">
-        <a href="#solucao"     @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs">💡</span> Solução</a>
-        <a href="#arquitetura" @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs">⚙️</span> Arquitetura Técnica</a>
-        <a href="#quem-somos"  @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs">👥</span> Quem Somos</a>
-        <a href="#cases"       @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs">📈</span> Cases de Sucesso</a>
-        <a href="#roi"         @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs">🧮</span> Calculadora ROI</a>
-        <a href="#planos"      @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs">🎯</span> Planos e Preços</a>
-        <a href="#faq"         @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs">❓</span> Perguntas Frequentes</a>
+        <a href="#solucao"     @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs" aria-hidden="true">💡</span> Solução</a>
+        <a href="#arquitetura" @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs" aria-hidden="true">⚙️</span> Arquitetura Técnica</a>
+        <a href="#quem-somos"  @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs" aria-hidden="true">👥</span> Quem Somos</a>
+        <a href="#cases"       @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs" aria-hidden="true">📈</span> Cases de Sucesso</a>
+        <a href="#roi"         @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs" aria-hidden="true">🧮</span> Calculadora ROI</a>
+        <a href="#planos"      @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs" aria-hidden="true">🎯</span> Planos e Preços</a>
+        <a href="#faq"         @click="mobileOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-navy-800/70 font-medium text-sm transition-all"><span class="w-7 h-7 rounded-lg bg-navy-800 flex items-center justify-center text-xs" aria-hidden="true">❓</span> Perguntas Frequentes</a>
         <div class="pt-3 border-t border-slate-800 mt-2">
           <a href="#auditoria" @click="mobileOpen = false" class="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-bold text-sm transition-all glow-emerald">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -1489,7 +1489,7 @@
 
         <!-- Badge -->
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-sm font-semibold mb-8">
-          <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+          <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true"></span>
           Elimine furos de caixa em 45 dias · código seu, zero lock-in
         </div>
 
@@ -1577,7 +1577,7 @@
         <!-- Real-time loss ticker -->
         <div class="mt-10 max-w-xl mx-auto loss-ticker-wrap reveal">
           <div class="flex items-center justify-center gap-2 mb-2">
-            <span class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
+            <span class="w-2 h-2 bg-red-400 rounded-full animate-pulse" aria-hidden="true"></span>
             <span class="text-red-400/70 text-xs font-semibold uppercase tracking-widest">Ao vivo · estimativa nacional</span>
           </div>
           <p class="text-center text-slate-400 text-sm leading-relaxed">
@@ -1597,7 +1597,7 @@
     </div>
 
     <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600 text-xs">
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600 text-xs" aria-hidden="true">
       <span>Veja quanto o seu restaurante perde por mês</span>
       <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -3097,7 +3097,7 @@
               <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></div>
               <div class="flex-1 mx-3 bg-navy-950/70 rounded px-3 py-1 text-xs text-slate-600 font-mono">dashboard.dataflowfinance.com.br</div>
               <span class="flex items-center gap-1.5 text-emerald-400 text-xs font-semibold flex-shrink-0">
-                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>Ao vivo
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true"></span>Ao vivo
               </span>
             </div>
             <!-- KPI row -->
@@ -3301,7 +3301,7 @@
         <!-- Urgência -->
         <div class="inline-flex items-center justify-center mb-6">
           <div class="urgency-strip">
-            <span class="urgency-dot"></span>
+            <span class="urgency-dot" aria-hidden="true"></span>
             Apenas <strong id="vagas-count" class="mx-1 text-white">3</strong> vagas disponíveis · encerram em <strong id="urgency-countdown" class="ml-1 text-white font-mono">--:--:--</strong>
           </div>
         </div>
@@ -3527,13 +3527,14 @@
             <button
               type="submit"
               :disabled="loading"
+              :aria-busy="loading ? 'true' : 'false'"
               class="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 disabled:cursor-not-allowed text-navy-950 font-bold text-base transition-all duration-200 glow-emerald"
             >
               <span x-show="!loading">
                 Solicitar Auditoria Gratuita →
               </span>
               <span x-show="loading" class="flex items-center gap-2">
-                <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -3851,7 +3852,7 @@
           </div>
           <p class="text-slate-500 text-xs leading-relaxed mb-5">Infraestrutura ETL dedicada para restaurantes. Pipelines que eliminam furos de caixa e automatizam o DRE — código 100% seu.</p>
           <div class="flex items-center gap-2 text-xs text-slate-600 mb-4">
-            <span class="api-dot api-offline" id="api-dot"></span>
+            <span class="api-dot api-offline" id="api-dot" aria-hidden="true"></span>
             <span id="api-status-text">Verificando API…</span>
             <a href="http://localhost:8000/docs" target="_blank" id="api-docs-link" class="hidden text-emerald-600 hover:text-emerald-400 transition-colors ml-1 underline underline-offset-2">/docs ↗</a>
           </div>
